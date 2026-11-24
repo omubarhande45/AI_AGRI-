@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "vite"
+    },
+    "smart_agri": {
+      "root": "smart_agri",
+      "framework": "flask",
+      "entrypoint": "run.py"
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": { "service": "smart_agri" } }
+  ]
+}

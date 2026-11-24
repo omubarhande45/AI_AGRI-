@@ -410,10 +410,9 @@ def disease():
             flash("The disease model is not trained yet.", "error")
         else:
             try:
-                result, bgr = detect_from_upload(file.stream)
+                result, rgb = detect_from_upload(file.stream)
                 uploaded_name = file.filename
-                import cv2
-                cam = MODEL.gradcam(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
+                cam = MODEL.gradcam(rgb)
                 if cam is not None:
                     gradcam_uri = encode_png(cam)
                 xai = _xai_stats()
@@ -456,12 +455,12 @@ def disease_demo(idx: int):
         return redirect(url_for("main.disease"))
     path = os.path.join(UPLOAD_DIR, "demo", files[idx % len(files)])
 
-    import cv2
-    bgr = cv2.imread(path)
-    if bgr is None:
+    from PIL import Image
+    try:
+        rgb = np.asarray(Image.open(path).convert("RGB"), dtype=np.uint8)
+    except Exception:
         flash(f"Could not read the demo image '{files[idx % len(files)]}'.", "error")
         return redirect(url_for("main.disease"))
-    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
     result = MODEL.predict_array(rgb)
     cam = MODEL.gradcam(rgb)
     gradcam_uri = encode_png(cam) if cam is not None else None
@@ -733,7 +732,7 @@ def profile():
                               (user["id"],))["n"],
         "soil_tests": db.query_one(
             "SELECT COUNT(*) AS n FROM soil_readings s JOIN fields f ON f.id=s.field_id "
-            "JOIN farms fa ON fa.id=f.farm_id WHERE fa.user_id=?", (user["id"],))["n"],
+            "JOIN farms fa ON fa.id=farm_id WHERE fa.user_id=?", (user["id"],))["n"],
     }
     sales = db.query("SELECT * FROM sales ORDER BY date DESC LIMIT 10")
     return render_template("profile.html", user=user, farm=farm, stats=stats, sales=sales,

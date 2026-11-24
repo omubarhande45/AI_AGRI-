@@ -22,3 +22,4 @@ smart_agri/data/uploads/scans/
 
 # Accidental workspace-level npm lockfile
 package-lock.json
+.vercel

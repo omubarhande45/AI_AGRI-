@@ -6,8 +6,14 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 MODEL_DIR = os.path.join(BASE_DIR, "models")
-UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 
+# Vercel functions have no persistent writable project filesystem. Keep the
+# SQLite database and uploaded scans in /tmp when deployed, while retaining
+# normal project-local storage for local development.
+if os.environ.get("VERCEL"):
+    DATA_DIR = os.environ.get("SMART_AGRI_DATA_DIR", "/tmp/agrismart")
+
+UPLOAD_DIR = os.path.join(DATA_DIR, "uploads")
 DB_PATH = os.path.join(DATA_DIR, "smart_agri.db")
 
 # --- Disease CNN (Edge AI module) -------------------------------------------

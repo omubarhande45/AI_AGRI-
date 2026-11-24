@@ -129,9 +129,11 @@ class DiseaseModel:
     # -- inference -------------------------------------------------------
     def preprocess(self, img_rgb: np.ndarray) -> np.ndarray:
         """HxWx3 uint8 RGB -> 1x3xSxS float32 ImageNet-normalised."""
-        import cv2
+        from PIL import Image
         s = self.input_size
-        img = cv2.resize(img_rgb, (s, s), interpolation=cv2.INTER_AREA).astype(np.float32) / 255.0
+        pil = Image.fromarray(img_rgb.astype(np.uint8), mode="RGB")
+        pil = pil.resize((s, s), resample=Image.Resampling.BILINEAR)
+        img = np.asarray(pil, dtype=np.float32) / 255.0
         img = (img - _IMAGENET_MEAN) / _IMAGENET_STD
         return np.transpose(img, (2, 0, 1))[None, ...].astype(np.float32)
 
@@ -201,12 +203,14 @@ class DiseaseModel:
         """Class-activation heatmap so the farmer can see WHERE the disease is."""
         if self._backend != "pytorch":
             return None
-        import cv2
         import torch
+        from PIL import Image
 
         m, _ = self._model
         s = self.input_size
-        img = cv2.resize(img_rgb, (s, s), interpolation=cv2.INTER_AREA).astype(np.float32) / 255.0
+        resized = Image.fromarray(img_rgb.astype(np.uint8), mode="RGB").resize(
+            (s, s), resample=Image.Resampling.BILINEAR)
+        img = np.asarray(resized, dtype=np.float32) / 255.0
         img = (img - _IMAGENET_MEAN) / _IMAGENET_STD
         x = torch.from_numpy(np.transpose(img, (2, 0, 1))[None, ...]).float()
 
@@ -242,40 +246,42 @@ class DiseaseModel:
         cam = cam.detach().numpy()
         if cam.max() <= 0:
             return None
-        cam = cv2.resize(cam, (s, s))
+        cam_img = Image.fromarray((cam * 255).astype(np.uint8)).resize(
+            (s, s), resample=Image.Resampling.BILINEAR)
+        cam = np.asarray(cam_img, dtype=np.float32) / 255.0
         cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-8)
-        # keep the normalised map so the UI can compute saliency statistics
         self._last_cam = cam
-        heat = cv2.applyColorMap((cam * 255).astype(np.uint8), cv2.COLORMAP_JET)
-        overlay = cv2.addWeighted(cv2.cvtColor(
-            cv2.resize(img_rgb, (s, s)), cv2.COLOR_RGB2BGR), 0.55, heat, 0.45, 0)
-        return overlay
+
+        heat = np.empty((s, s, 3), dtype=np.uint8)
+        heat[..., 0] = np.clip(cam * 255 * 2, 0, 255)
+        heat[..., 1] = np.clip((1.0 - np.abs(cam - 0.5) * 2) * 255, 0, 255)
+        heat[..., 2] = np.clip((1.0 - cam) * 255, 0, 255)
+        base = np.asarray(Image.fromarray(img_rgb.astype(np.uint8)).resize(
+            (s, s), resample=Image.Resampling.BILINEAR), dtype=np.uint8)
+        return np.clip(base * 0.55 + heat * 0.45, 0, 255).astype(np.uint8)
 
 
 MODEL = DiseaseModel()
 
 
-def encode_png(bgr: np.ndarray) -> str:
-    """BGR array -> inline data URI (used to show the Grad-CAM overlay in the UI)."""
-    import cv2
-    ok, buf = cv2.imencode(".png", bgr)
-    if not ok:
-        return ""
-    return "data:image/png;base64," + base64.b64encode(buf.tobytes()).decode()
+def encode_png(rgb: np.ndarray) -> str:
+    """RGB array -> inline PNG data URI."""
+    from PIL import Image
+    buf = io.BytesIO()
+    Image.fromarray(rgb.astype(np.uint8), mode="RGB").save(buf, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
 def detect_from_upload(storage, max_side: int = 900) -> tuple[dict[str, Any], np.ndarray]:
-    """Read an uploaded file-like object and run detection. Returns (result, bgr_img)."""
-    import cv2
+    """Read an uploaded image and run detection; return (result, rgb_image)."""
+    from PIL import Image
     raw = storage.read()
-    arr = np.frombuffer(raw, dtype=np.uint8)
-    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-    if img is None:
+    try:
+        img = Image.open(io.BytesIO(raw)).convert("RGB")
+    except Exception:
         raise ValueError("could not decode image - please upload a JPG or PNG photo")
-    h, w = img.shape[:2]
-    if max(h, w) > max_side:
-        scale = max_side / max(h, w)
-        img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
-    rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    if max(img.size) > max_side:
+        img.thumbnail((max_side, max_side), resample=Image.Resampling.BILINEAR)
+    rgb = np.asarray(img, dtype=np.uint8)
     result = MODEL.predict_array(rgb)
-    return result, img
+    return result, rgb
