@@ -1,0 +1,24 @@
+# Dependencies and build outputs
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local/runtime database and upload artifacts
+smart_agri/data/smart_agri.db
+smart_agri/data/uploads/scans/
+
+# Accidental workspace-level npm lockfile
+package-lock.json

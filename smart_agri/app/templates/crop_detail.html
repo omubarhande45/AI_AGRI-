@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}{{ field.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">FIELD DOSSIER · {{ field.season|upper }} · SOWN {{ field.sowing_date or '—' }}</div>
+    <h1>{{ field.name }} — {{ field.crop }}{% if field.variety %} ({{ field.variety }}){% endif %}</h1>
+    <div class="sub">{{ '%.1f'|format(field.area_acres) }} acres · health {{ health.overall_score }}/100 ({{ health.grade }}) · expected harvest {{ field.expected_harvest or '—' }}</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <a class="btn ghost" href="{{ url_for('main.twin', field_id=field.id) }}">Open in Twin</a>
+    <a class="btn" href="{{ url_for('main.dss_page') }}">Run DSS</a>
+  </div>
+</div>
+
+<div class="grid g-75">
+  <div class="stack">
+    <div class="card">
+      <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+        <div class="t">HEALTH DECOMPOSITION</div></div>
+      {% for k, v in health.sub_scores.items() %}
+      <div class="metric-row"><span class="k">{{ k|title }}</span>
+        <span class="bar"><i class="{{ 'bad' if v<55 else ('warn' if v<75 else '') }}" style="width:{{ v }}%"></i></span>
+        <span class="v">{{ v|round(0)|int }}</span></div>
+      <div class="tiny dim" style="margin:0 0 8px 104px">{{ health.notes[k] }}</div>
+      {% endfor %}
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/></svg></span>
+        <div class="t">DIGITAL TWIN — 60 D TRAJECTORY</div>
+        <div class="grow"></div><span class="chip">{{ twin.stage }}</span></div>
+      <canvas id="cropChart" class="chart" height="170"
+        data-labels='{{ (twin.trajectory[::3]|map(attribute="date")|list)|tojson }}'
+        data-values='{{ (twin.trajectory[::3]|map(attribute="ndvi")|list)|tojson }}'
+        data-health='{{ (twin.trajectory[::3]|map(attribute="health_score")|list)|tojson }}'></canvas>
+      <div class="kv" style="margin-top:10px"><span class="k">Projected yield</span><span class="v up">{{ twin.projected_yield_kg_per_acre }} kg/ac ({{ twin.yield_vs_typical_pct }}% vs typical)</span></div>
+      <div class="kv"><span class="k">Peak water stress</span><span class="v">{{ (twin.peak_water_stress*100)|round(0)|int }}%</span></div>
+      {% for a in twin.alerts %}<p class="tiny" style="margin-top:6px"><span class="badge {{ 'red' if a.level=='high' else 'amber' }}">{{ a.level }}</span> {{ a.message }}</p>{% endfor %}
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 13h10"/></svg></span>
+        <div class="t">SOIL TEST HISTORY</div>
+        <div class="grow"></div>
+        <form method="post" action="{{ url_for('main.add_soil', field_id=field.id) }}" style="display:flex;gap:6px;flex-wrap:wrap">
+          <input name="nitrogen" placeholder="N" style="width:52px;padding:4px 6px;border:1px solid var(--line-strong);border-radius:6px">
+          <input name="phosphorus" placeholder="P" style="width:52px;padding:4px 6px;border:1px solid var(--line-strong);border-radius:6px">
+          <input name="potassium" placeholder="K" style="width:52px;padding:4px 6px;border:1px solid var(--line-strong);border-radius:6px">
+          <input name="moisture" placeholder="Moist %" style="width:64px;padding:4px 6px;border:1px solid var(--line-strong);border-radius:6px">
+          <button class="btn xs">+ Log test</button>
+        </form>
+      </div>
+      <table class="tbl">
+        <tr><th>Date</th><th style="text-align:right">N</th><th style="text-align:right">P</th><th style="text-align:right">K</th><th style="text-align:right">pH</th><th style="text-align:right">OC %</th><th style="text-align:right">Moist %</th></tr>
+        {% for s in soil_history %}
+        <tr><td>{{ s.recorded_at }}</td><td class="num">{{ s.nitrogen }}</td><td class="num">{{ s.phosphorus }}</td><td class="num">{{ s.potassium }}</td><td class="num">{{ s.ph }}</td><td class="num">{{ s.organic_carbon }}</td><td class="num">{{ s.moisture }}</td></tr>
+        {% else %}<tr><td colspan="7" class="dim">No soil tests on record.</td></tr>{% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg></span>
+        <div class="t">ML YIELD PREDICTION</div></div>
+      {% if yield_pred %}
+      <div class="mono" style="font-size:26px;font-weight:800">{{ yield_pred.yield_kg_per_acre }} <span class="tiny dim">kg/acre</span></div>
+      <div class="kv"><span class="k">Band ({{ yield_pred.confidence_pct }}% conf.)</span><span class="v">{{ yield_pred.yield_range_kg_per_acre[0] }}–{{ yield_pred.yield_range_kg_per_acre[1] }}</span></div>
+      <div class="kv"><span class="k">Total</span><span class="v">{{ yield_pred.total_yield_q }} q</span></div>
+      <div class="lbl" style="margin:10px 0 6px">LIMITING FACTORS</div>
+      {% for lf in yield_pred.limiting_factors[:4] %}
+      <div class="kv"><span class="k">{{ lf.factor }}</span><span class="v dn">−{{ lf.impact_pct }}%</span></div>
+      {% else %}<p class="tiny dim">No material limiting factors.</p>{% endfor %}
+      {% else %}<p class="dim tiny">Crop profile unavailable.</p>{% endif %}
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.7s6.5 7 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 9.7 12 2.7 12 2.7z"/></svg></span>
+        <div class="t">IRRIGATION LOG</div></div>
+      <table class="tbl">
+        <tr><th>Date</th><th style="text-align:right">mm</th><th>Method</th><th>Source</th></tr>
+        {% for l in irrigation_log %}
+        <tr><td>{{ l.date }}</td><td class="num">{{ l.water_mm }}</td><td>{{ l.method }}</td><td><span class="chip {{ 'green' if l.source=='recommended' else '' }}">{{ l.source }}</span></td></tr>
+        {% else %}<tr><td colspan="4" class="dim">No irrigation logged.</td></tr>{% endfor %}
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V9"/><path d="M12 9C12 5 15 2 20 2c0 5-3 8-8 8z"/></svg></span>
+        <div class="t">FERTIGATION / PROTECTION LOG</div></div>
+      <table class="tbl">
+        <tr><th>Date</th><th>Product</th><th style="text-align:right">kg/ac</th></tr>
+        {% for l in fert_log %}
+        <tr><td>{{ l.date }}</td><td>{{ l.product }}</td><td class="num">{{ l.dose_kg_per_acre }}</td></tr>
+        {% else %}<tr><td colspan="3" class="dim">Nothing logged yet.</td></tr>{% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

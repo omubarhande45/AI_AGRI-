@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Disease Detection & XAI{% endblock %}
+{% set PATHOGEN = {
+  'Tomato Early Blight': 'Alternaria solani', 'Tomato Late Blight': 'Phytophthora infestans',
+  'Bacterial spot': 'Xanthomonas campestris', 'Septoria leaf spot': 'Septoria lycopersici',
+  'Target Spot': 'Corynespora cassiicola', 'Leaf Mold': 'Passalora fulva',
+  'Yellow Leaf Curl Virus': 'Begomovirus (TYLCV)', 'Common Rust': 'Puccinia sorghi',
+  'Northern Leaf Blight': 'Exserohilum turcicum', 'Black rot': 'Guignardia bidwellii',
+  'Late Blight': 'Phytophthora infestans', 'Early Blight': 'Alternaria solani' } %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">EDGE-COMPUTE · BATCH 01 · CNN LOADED · {{ classes }} CLASSES · GRAD-CAM READY</div>
+    <h1>AI Disease Diagnostics &amp; Grad-CAM XAI Engine</h1>
+    <div class="sub">High-throughput visual leaf pathology diagnostics using explainable activation mappings for precision field interventions. Test accuracy {{ ((model.meta.get('test_accuracy') or cnn_acc or 0)*100)|round(2) }}% on {{ '{:,}'.format(model.meta.get('test_samples', 10878)) }} held-out images.</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    {% if result %}<a class="btn ghost" href="{{ url_for('main.reports_diagnostic_pdf', report_id=result.report_id) }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      Export Diagnostic PDF</a>{% endif %}
+    <a class="btn" href="{{ url_for('main.twin') }}">Update Digital Twin Farm Model</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:14px">
+  <div class="card-head">
+    <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg></span>
+    <div class="t">UPLOAD CROP OR LEAF SPECIMEN</div>
+    <div class="grow"></div>
+    <span class="lbl">LOAD PRESETS:</span>
+    <div class="pill-tabs">
+      {% for p in presets %}
+      <a href="{{ url_for('main.disease_demo', idx=p.idx) }}" class="{{ 'on' if uploaded == p.file }}">{{ p.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <form method="post" enctype="multipart/form-data" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+    <div class="field" style="flex:1;min-width:220px;margin:0">
+      <label>Crop &amp; drop zone — leaf photo (JPG/PNG)</label>
+      <input type="file" name="leaf_image" accept="image/*">
+    </div>
+    <div class="field" style="width:180px;margin:0">
+      <label>Attach to field</label>
+      <select name="field_id">{% for f in fields %}<option value="{{ f.id }}">{{ f.name }}</option>{% endfor %}</select>
+    </div>
+    <button class="btn">Upload &amp; Run CNN</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="grid g-3" style="margin-bottom:14px">
+  <div class="card pad-sm">
+    <div class="card-head" style="margin-bottom:8px"><span class="lbl">CARD 1 · ORIGINAL SPECIMEN</span><div class="grow"></div><span class="chip">{{ uploaded }}</span></div>
+    <div class="thumb" style="height:220px">
+      {% if image_rel %}<img src="{{ url_for('main.uploaded_file', path=image_rel) }}" alt="specimen">
+      {% elif gradcam %}<img src="{{ gradcam }}" alt="specimen" style="filter:saturate(.9)">{% endif %}
+    </div>
+    <div class="tiny dim" style="margin-top:8px">Input tensor 128×128 · ImageNet normalised · backend: {{ result.backend }}</div>
+  </div>
+  <div class="card pad-sm">
+    <div class="card-head" style="margin-bottom:8px"><span class="lbl">CARD 2 · GRAD-CAM SALIENCY MAP</span><div class="grow"></div><span class="chip orange">JET α 0.45</span></div>
+    <div class="thumb" style="height:220px">{% if gradcam %}<img src="{{ gradcam }}" alt="gradcam">{% else %}<p class="dim tiny" style="padding:12px">Grad-CAM requires the PyTorch backend.</p>{% endif %}</div>
+    <div class="tiny dim" style="margin-top:8px">Inspection latency &lt; 1 s on CPU · hook on final conv block (576 ch)</div>
+  </div>
+  <div class="card pad-sm">
+    <div class="card-head" style="margin-bottom:8px"><span class="lbl">CARD 3 · CLASSIFICATION VERDICT</span><div class="grow"></div>
+      <span class="badge {{ 'green' if result.is_healthy else 'red' }}">{{ 'HEALTHY' if result.is_healthy else 'PATHOGEN' }}</span></div>
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <div style="font-weight:800;font-size:16px;line-height:1.2">{{ result.top.disease }}</div>
+      <div class="mono" style="font-size:26px;font-weight:800;margin-left:auto;color:{{ 'var(--green-700)' if result.is_healthy else 'var(--orange-600)' }}">{{ (result.top.confidence*100)|round(1) }}%</div>
+    </div>
+    <div class="tiny dim">{{ PATHOGEN.get(result.top.disease, result.top.crop) }} · severity: {{ result.top.severity }} · spread risk {{ result.top.spread_risk }}</div>
+    <hr class="divider">
+    <div class="kv"><span class="k">Expected leaf-spot / yield impact</span><span class="v">{{ result.top.expected_yield_loss_pct|round(1) }}%</span></div>
+    <div class="kv"><span class="k">Healthy-foliage baseline</span><span class="v">{{ (result.predictions[-1].confidence*100)|round(1) }}%</span></div>
+    <div class="kv"><span class="k">Model test accuracy</span><span class="v">{{ (result.model_accuracy*100)|round(2) }}%</span></div>
+    <div class="tiny dim" style="margin-top:8px">Cross-referenced against the regional priority list (CAB Partner Diagnosis): {{ regional|length }} Maharashtra classes.</div>
+  </div>
+</div>
+
+<div class="grid g-2" style="margin-bottom:14px">
+  <div class="card">
+    <div class="card-head"><span class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></svg></span>
+      <div class="t">EXPLAINABLE AI (XAI) INSIGHT — WHY THE MODEL MADE THIS DECISION</div></div>
+    {% if xai %}
+    <div class="steps">
+      {% if not result.is_healthy %}
+      <div class="step"><div class="n">◎</div><div><div class="t">Lesion-boundary activation</div>
+        <div class="d">{{ xai.ring }}% of high-gradient tensor mass sits in the annular ring around the saliency centroid — the concentric necrosis signature the network keys on.</div></div></div>
+      <div class="step"><div class="n">◎</div><div><div class="t">Chlorotic halo signature</div>
+        <div class="d">Core disc holds {{ xai.core }}% of the mass; distinct yellow-to-brown margin gradients separate this from abiotic burn.</div></div></div>
+      {% else %}
+      <div class="step"><div class="n">◎</div><div><div class="t">Diffuse lamina attention</div>
+        <div class="d">Activation is spread across the leaf ({{ xai.cover }}% coverage) with no focal lesion mass — consistent with healthy tissue.</div></div></div>
+      {% endif %}
+      <div class="step"><div class="n">◎</div><div><div class="t">Focus concentration</div>
+        <div class="d">Top-decile pixels carry {{ xai.top10 }}% of total saliency over {{ xai.cover }}% of the 128×128 tensor — a focal, not background, decision.</div></div></div>
+    </div>
+    <hr class="divider">
+    <div class="kv"><span class="k">Estimated damage area</span><span class="v">~{{ xai.cover|round(0)|int }}% lamina</span></div>
+    <div class="kv"><span class="k">Pathogen lifecycle stage</span><span class="v">{{ 'Moderate' if not result.is_healthy else 'None' }}</span></div>
+    <div class="kv"><span class="k">Grad-CAM alignment</span><span class="v">{{ (xai.top10/0.9)|round(1)|float|round(0)|int if xai.top10 else 0 }}/10</span></div>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <div class="t">RULE-BASED REMEDIATION &amp; FOLIAR PROTOCOL</div>
+      <div class="grow"></div><span class="chip amber">Intervention window ≤ 48 h</span></div>
+    <div class="steps">
+      {% for m in result.top.management[:3] %}
+      <div class="step"><div class="n">{{ loop.index }}</div><div><div class="t">{{ m.split('. ')[0] if '. ' in m else m[:42] }}</div>
+        <div class="d">{{ m }}</div></div></div>
+      {% else %}
+      <div class="step"><div class="n">1</div><div><div class="t">No intervention required</div><div class="d">Continue the weekly scouting cadence and maintain drip schedule.</div></div></div>
+      {% endfor %}
+    </div>
+    {% if result.top.organic %}<p class="tiny dim" style="margin-top:10px">Organic option: {{ result.top.organic }}</p>{% endif %}
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <a class="btn ghost sm" href="{{ url_for('main.market') }}">Order Fungicide Kit</a>
+      <a class="btn orange sm" href="{{ url_for('main.dashboard') }}">Dispatch Field Task</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 13h10M7 17h7"/></svg></span>
+    <div class="t">DIAGNOSTIC LEDGER — LAST {{ history|length }} SCANS</div></div>
+  <table class="tbl">
+    <tr><th>#</th><th>When</th><th>Field</th><th>Diagnosis</th><th>Confidence</th><th>Severity</th><th>Certificate</th></tr>
+    {% for h in history %}
+    <tr><td class="num">{{ h.id }}</td><td>{{ h.created_at[:16] }}</td><td>{{ h.field_name or '—' }}</td>
+      <td><b>{{ h.disease_name }}</b></td><td class="num">{{ (h.confidence*100)|round(1) }}%</td>
+      <td><span class="badge {{ 'green' if h.severity in ('none','low') else 'orange' }}">{{ h.severity }}</span></td>
+      <td><a class="chip" href="{{ url_for('main.reports_diagnostic_pdf', report_id=h.id) }}">PDF ⤓</a></td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

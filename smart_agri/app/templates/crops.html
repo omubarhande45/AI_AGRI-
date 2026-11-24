@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Crop Monitoring{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">FIELD OPERATIONS · {{ cards|length }} FIELDS</div>
+    <h1>Crop Monitoring</h1>
+    <div class="sub">Per-field health, soil, twin vigour and Edge-AI history. <a href="{{ url_for('main.add_field') }}">+ Add field</a></div>
+  </div>
+</div>
+<div class="grid g-3">
+  {% for c in cards %}
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="font-weight:800;font-size:14px">{{ c.field.name }}</div>
+      <span class="chip green">{{ c.field.crop }}</span>
+      <div class="grow" style="flex:1"></div>
+      <span class="badge {{ 'green' if c.health.overall_score>=70 else ('amber' if c.health.overall_score>=55 else 'red') }}">{{ c.health.grade[:1] }}</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <span class="mono" style="font-size:26px;font-weight:800">{{ c.health.overall_score|round(0)|int }}</span>
+      <span class="tiny dim">/100 health · {{ '%.1f'|format(c.field.area_acres) }} ac · {{ c.field.season }}</span>
+    </div>
+    <div class="metric-row"><span class="k">Nutrition</span><span class="bar"><i style="width:{{ c.health.sub_scores.nutrition }}%"></i></span><span class="v">{{ c.health.sub_scores.nutrition|round(0)|int }}</span></div>
+    <div class="metric-row"><span class="k">Water</span><span class="bar"><i style="width:{{ c.health.sub_scores.water }}%"></i></span><span class="v">{{ c.health.sub_scores.water|round(0)|int }}</span></div>
+    <div class="metric-row"><span class="k">Protection</span><span class="bar"><i class="{{ 'bad' if c.health.sub_scores.protection<55 else '' }}" style="width:{{ c.health.sub_scores.protection }}%"></i></span><span class="v">{{ c.health.sub_scores.protection|round(0)|int }}</span></div>
+    <div class="kv"><span class="k">Twin stage</span><span class="v">{{ c.twin.stage if c.twin else '—' }}</span></div>
+    <div class="kv"><span class="k">Irrigate in</span><span class="v">{{ c.irrigation.days_until_irrigation }} d · {{ c.irrigation.apply_mm }} mm</span></div>
+    {% if c.top_risk %}<div><span class="badge {{ 'red' if c.top_risk.risk_score>=70 else 'amber' }}">{{ c.top_risk.threat }} {{ c.top_risk.risk_score|round(0)|int }}/100</span></div>{% endif %}
+    <a class="btn ghost sm block" href="{{ url_for('main.crop_detail', field_id=c.field.id) }}">Open field dossier →</a>
+  </div>
+  {% else %}
+  <div class="card"><p class="dim">No fields yet — <a href="{{ url_for('main.add_field') }}">add your first field</a>.</p></div>
+  {% endfor %}
+</div>
+{% endblock %}

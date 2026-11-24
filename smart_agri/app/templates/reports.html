@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">DOCUMENT PIPELINE · REPORTLAB A4 CERTIFICATES</div>
+    <h1>Reports &amp; Export Centre</h1>
+    <div class="sub">Comprehensive farm report, per-scan diagnostic certificates and the closed-loop audit trail.</div>
+  </div>
+  <a class="btn" href="{{ url_for('main.reports_farm_pdf') }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+    Generate Farm Report (PDF)</a>
+</div>
+
+<div class="grid g-kpi" style="margin-bottom:14px">
+  <div class="card kpi"><div class="top"><span class="lbl">LEAF SCANS</span></div>
+    <div class="val">{{ history|length }}</div><div class="sub"><div class="cell"><div class="lbl">CNN backend</div><div class="v">MobileNetV3</div></div></div></div>
+  <div class="card kpi"><div class="top"><span class="lbl">PRESCRIPTIONS CLOSED</span></div>
+    <div class="val">{{ done }}</div><div class="sub"><div class="cell"><div class="lbl">loop</div><div class="v">closed</div></div></div></div>
+  <div class="card kpi"><div class="top"><span class="lbl">IN-SILICO RUNS</span></div>
+    <div class="val">{{ sims }}</div><div class="sub"><div class="cell"><div class="lbl">twin engine</div><div class="v">GDD</div></div></div></div>
+  <div class="card kpi"><div class="top"><span class="lbl">SALES LOGGED</span></div>
+    <div class="val">{{ sales|length }}</div><div class="sub"><div class="cell"><div class="lbl">mandis</div><div class="v">{{ sales|map(attribute='mandi')|unique|list|length }}</div></div></div></div>
+</div>
+
+<div class="grid g-2">
+  <div class="card">
+    <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg></span>
+      <div class="t">DIAGNOSTIC CERTIFICATES</div></div>
+    <table class="tbl">
+      <tr><th>#</th><th>Date</th><th>Diagnosis</th><th>Conf.</th><th>PDF</th></tr>
+      {% for h in history %}
+      <tr><td class="num">{{ h.id }}</td><td>{{ h.created_at[:10] }}</td>
+        <td><b>{{ h.disease_name }}</b><div class="tiny dim">{{ h.field_name or '—' }}</div></td>
+        <td class="num">{{ (h.confidence*100)|round(1) }}%</td>
+        <td><a class="chip green" href="{{ url_for('main.reports_diagnostic_pdf', report_id=h.id) }}">⤓ PDF</a></td></tr>
+      {% else %}<tr><td colspan="5" class="dim">No scans yet.</td></tr>{% endfor %}
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+      <div class="t">SALES &amp; REALISATION LOG</div></div>
+    <table class="tbl">
+      <tr><th>Date</th><th>Crop</th><th>Mandi</th><th style="text-align:right">Qty (q)</th><th style="text-align:right">₹/q</th></tr>
+      {% for s in sales %}
+      <tr><td>{{ s.date }}</td><td>{{ s.crop }}</td><td>{{ s.mandi }}</td>
+        <td class="num">{{ s.quantity_q }}</td><td class="num">{{ inr(s.price_per_q) }}</td></tr>
+      {% else %}<tr><td colspan="5" class="dim">No sales logged yet.</td></tr>{% endfor %}
+    </table>
+    <hr class="divider">
+    <p class="tiny dim">The comprehensive farm report bundles the health assessment, ranked action plan,
+      yield &amp; profit outlook and mandi matrix into one A4 document for bank / KVK submissions.</p>
+  </div>
+</div>
+{% endblock %}

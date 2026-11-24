@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block bare %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-side">
+      <div class="brand" style="padding:0">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#bfe8c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21v-8"/><path d="M12 13c0-4 3-7 8-7 0 4-3 7-8 7z" fill="#2f8f63" stroke="#bfe8c8"/>
+            <path d="M12 13c0-3-2.5-5-6-5 0 3 2.5 5 6 5z" fill="#1e5b41" stroke="#bfe8c8"/>
+          </svg>
+        </div>
+        <div><div class="brand-name" style="color:#fff">AgriSmart<em>AI</em></div>
+        <div class="brand-sub" style="color:#8fb389">DECISION SUPPORT SYSTEM</div></div>
+      </div>
+      <h2>Every decision on your farm,<br>backed by AI.</h2>
+      <p class="muted">Offline disease detection from a single leaf photo, a digital twin that
+        simulates your field 60 days forward, yield &amp; price models, and one ranked list of
+        what to do next.</p>
+      <ul>
+        <li><span class="ic">🔬</span><div><b>Edge AI</b> — MobileNetV3 CNN trained on 43,503 real leaf images, 38 disease classes, Grad-CAM explainability.</div></li>
+        <li><span class="ic">🛰️</span><div><b>Digital Twin</b> — thermal-time growth model with sector-level LoRa telemetry and an in-silico scenario engine.</div></li>
+        <li><span class="ic">📈</span><div><b>Market Intelligence</b> — 90-day recursive price forecast and best-mandi selection across 7 mandis.</div></li>
+        <li><span class="ic">🎯</span><div><b>DSS</b> — expected yield, profit and a ranked, deployable action list.</div></li>
+      </ul>
+    </div>
+    <div class="auth-form">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="margin:0">Farmer login</h2>
+        <div class="lang-switcher">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <select class="lang-select" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="mr">मराठी (Marathi)</option>
+          </select>
+        </div>
+      </div>
+      <p class="dim tiny" style="margin:4px 0 14px">Sign in to open your farm dashboard. Demo account: <b>ramesh / farmer123</b></p>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+      {% endwith %}
+      <form method="post">
+        <div class="field"><label>Username</label><input name="username" autofocus required></div>
+        <div class="field"><label>Password</label><input name="password" type="password" required></div>
+        <button class="btn block">Sign in →</button>
+      </form>
+      <p class="tiny dim" style="margin-top:12px">New here? <a href="{{ url_for('auth.register') }}">Register a farmer account</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

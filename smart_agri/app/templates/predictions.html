@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}AI Predictions Lab{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">MODEL BENCH · YIELD R² {{ yield_r2 }} · IRRIGATION FAO-56 · NPK MASS-BALANCE</div>
+    <h1>AI Predictions Lab</h1>
+    <div class="sub">Yield, irrigation, fertilizer and pest models with a what-if override bench.</div>
+  </div>
+  <div class="pill-tabs">
+    {% for f in cards %}
+    <a href="{{ url_for('main.predictions', field_id=f.id) }}" class="{{ 'on' if f.id==field.id }}">{{ f.name }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if not field %}
+<div class="card"><p class="dim">No fields yet — <a href="{{ url_for('main.add_field') }}">add your first field</a> to access the predictions lab.</p></div>
+{% else %}
+<div class="grid g-75">
+  <div class="stack">
+    <div class="card">
+      <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg></span>
+        <div class="t">YIELD — HISTOGRAM-GRADIENT REGRESSOR</div>
+        <div class="grow"></div><span class="chip green">{{ yield_pred.source if yield_pred else '—' }}</span></div>
+      {% if yield_pred %}
+      <div class="mono" style="font-size:28px;font-weight:800">{{ yield_pred.yield_kg_per_acre }} <span class="tiny dim">kg/acre</span></div>
+      <div class="kv"><span class="k">Confidence band</span><span class="v">{{ yield_pred.yield_range_kg_per_acre[0] }}–{{ yield_pred.yield_range_kg_per_acre[1] }} kg/ac ({{ yield_pred.confidence_pct }}%)</span></div>
+      <div class="kv"><span class="k">Field total</span><span class="v">{{ yield_pred.total_yield_q }} q</span></div>
+      <div class="kv"><span class="k">vs typical</span><span class="v {{ 'up' if yield_pred.performance_vs_typical_pct>=0 else 'dn' }}">{{ yield_pred.performance_vs_typical_pct }}%</span></div>
+      <div class="lbl" style="margin:10px 0 6px">LIMITING FACTORS</div>
+      {% for lf in yield_pred.limiting_factors %}
+      <div class="kv"><span class="k">{{ lf.factor }} — {{ lf.detail }}</span><span class="v dn">−{{ lf.impact_pct }}%</span></div>
+      {% else %}<p class="tiny dim">Inputs are non-limiting at current levels.</p>{% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.7s6.5 7 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 9.7 12 2.7 12 2.7z"/></svg></span>
+        <div class="t">IRRIGATION — HARGREAVES ET₀ + FAO-56 Kc BUDGET</div></div>
+      <div class="kv"><span class="k">Next irrigation</span><span class="v">in {{ irrigation.days_until_irrigation }} day(s)</span></div>
+      <div class="kv"><span class="k">Apply</span><span class="v">{{ irrigation.apply_mm }} mm · {{ '{:,}'.format(irrigation.litres_per_acre|round(0)|int) }} L/acre</span></div>
+      <div class="kv"><span class="k">Weekly demand vs rain</span><span class="v">{{ irrigation.weekly_demand_mm }} / {{ irrigation.weekly_effective_rain_mm }} mm</span></div>
+      <div class="kv"><span class="k">Water-stress index</span><span class="v {{ 'dn' if irrigation.water_stress_index>0.3 else 'up' }}">{{ (irrigation.water_stress_index*100)|round(0)|int }}%</span></div>
+      <p class="tiny dim" style="margin-top:8px">{{ irrigation.saving_note if irrigation.saving_note else '' }}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V9"/><path d="M12 9C12 5 15 2 20 2c0 5-3 8-8 8z"/></svg></span>
+        <div class="t">FERTILIZER — NPK MASS-BALANCE WITH SOIL CREDIT</div></div>
+      <table class="tbl">
+        <tr><th>Product</th><th>Stage</th><th style="text-align:right">Dose/ac</th><th style="text-align:right">Cost</th></tr>
+        {% for p in fertilizer.plan %}
+        <tr><td><b>{{ p.product }}</b><div class="tiny dim">{{ p.note }}</div></td><td>{{ p.stage }}</td>
+          <td class="num">{{ p.dose_per_acre }} {{ p.unit }}</td><td class="num">{{ inr(p.cost_inr) }}</td></tr>
+        {% else %}<tr><td colspan="4" class="dim">Soil credit covers the requirement — no top-up needed.</td></tr>{% endfor %}
+      </table>
+      {% if fertilizer.plan %}<div class="kv" style="margin-top:8px"><span class="k">Program cost</span><span class="v">{{ inr(fertilizer.total_cost_inr) }}</span></div>{% endif %}
+      {% for w in fertilizer.warnings %}<p class="tiny" style="margin-top:6px"><span class="badge amber">soil</span> {{ w }}</p>{% endfor %}
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-head"><span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/></svg></span>
+        <div class="t">PEST &amp; DISEASE RISK — WEATHER-DRIVEN</div></div>
+      {% for r in pest.risks %}
+      <div class="metric-row"><span class="k" style="width:140px">{{ r.threat }}</span>
+        <span class="bar"><i class="{{ 'bad' if r.risk_score>=70 else 'warn' }}" style="width:{{ r.risk_score }}%"></i></span>
+        <span class="v">{{ r.risk_score|round(0)|int }}</span></div>
+      <p class="tiny dim" style="margin:2px 0 8px 148px">{{ r.driver }} {{ r.action }}</p>
+      {% else %}<p class="tiny dim">No significant pressure under the current weather window.</p>{% endfor %}
+      <div class="kv"><span class="k">Spray window</span><span class="v">{{ pest.spray_window.note }}</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/></svg></span>
+        <div class="t">WHAT-IF BENCH</div></div>
+      <form method="post">
+        <div class="form-row">
+          <div class="field"><label>Crop</label><select name="crop">{% for c in crop_names %}<option {{ 'selected' if c==field.crop }}>{{ c }}</option>{% endfor %}</select></div>
+          <div class="field"><label>Area (ac)</label><input name="area_acres" type="number" step="0.1" value="{{ field.area_acres }}"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Nitrogen</label><input name="nitrogen" type="number" value="{{ (soil.nitrogen if soil else 0)|round(0)|int }}"></div>
+          <div class="field"><label>Potassium</label><input name="potassium" type="number" value="{{ (soil.potassium if soil else 0)|round(0)|int }}"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Rainfall mm (season)</label><input name="rainfall_mm" type="number" value="450"></div>
+          <div class="field"><label>Irrigation mm</label><input name="irrigation_mm" type="number" value="220"></div>
+        </div>
+        <div class="field"><label class="switch"><input type="checkbox" name="drip" checked><span class="track"></span></label> Drip system</div>
+        <button class="btn block">Recalculate →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

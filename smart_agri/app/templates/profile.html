@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">ACCOUNT · {{ user.role|upper }}</div>
+    <h1>{{ user.full_name }}</h1>
+    <div class="sub">@{{ user.username }} · {{ user.phone or 'no phone on file' }} · member since {{ user.created_at[:10] }}</div>
+  </div>
+</div>
+<div class="grid g-kpi" style="margin-bottom:14px">
+  <div class="card kpi"><div class="top"><span class="lbl">FARMS</span></div><div class="val">{{ stats.farms }}</div></div>
+  <div class="card kpi"><div class="top"><span class="lbl">FIELDS</span></div><div class="val">{{ stats.fields }}</div></div>
+  <div class="card kpi"><div class="top"><span class="lbl">LEAF SCANS</span></div><div class="val">{{ stats.scans }}</div></div>
+  <div class="card kpi"><div class="top"><span class="lbl">SOIL TESTS</span></div><div class="val">{{ stats.soil_tests }}</div></div>
+</div>
+<div class="grid g-2">
+  <div class="card">
+    <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>
+      <div class="t">MODEL STACK STATUS</div></div>
+    <div class="kv"><span class="k">Disease CNN</span><span class="v up">{{ model_status.backend }} · {{ model_status.classes }} classes · {{ (model_status.test_accuracy*100)|round(2) }}%</span></div>
+    <div class="kv"><span class="k">Yield model</span><span class="v">HistGradientBoosting · R² {{ yield_r2 }}</span></div>
+    <div class="kv"><span class="k">Price model</span><span class="v">R² 0.9998 · 90-d recursive</span></div>
+    <div class="kv"><span class="k">Digital twin</span><span class="v">GDD + FAO-56 water balance</span></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+      <div class="t">RECENT SALES</div></div>
+    <table class="tbl">
+      <tr><th>Date</th><th>Crop</th><th>Mandi</th><th style="text-align:right">Qty</th><th style="text-align:right">₹/q</th></tr>
+      {% for s in sales %}
+      <tr><td>{{ s.date }}</td><td>{{ s.crop }}</td><td>{{ s.mandi }}</td><td class="num">{{ s.quantity_q }}</td><td class="num">{{ inr(s.price_per_q) }}</td></tr>
+      {% else %}<tr><td colspan="5" class="dim">No sales recorded.</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

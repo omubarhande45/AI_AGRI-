@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">⌖ PLOT {{ farm.district or 'Nashik' }} AGRO-ZONE · DAY {{ (now_frac and primary and primary.sowing_date and ((now_frac*100)|int)) or '—' }} TRANSMISSION 06:00 · {{ '%.1f'|format(farm.total_area) }} ACRES {{ (primary.crop if primary else 'CROP')|upper }}</div>
+    <h1>Welcome back, {{ current_user.full_name }}</h1>
+    <div class="sub">{{ primary.crop if primary else '—' }} Crop{% if primary and primary.variety %} ({{ primary.variety }}){% endif %} · {{ farm.village or 'Nashik' }} Agro-Climatic Zone · real-time AI advisory synced with ICAR-CCRI standards</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn" href="{{ url_for('main.disease') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg> Scan New Leaf</a>
+    <a class="btn ghost" href="{{ url_for('main.twin') }}">Digital Twin</a>
+    <a class="btn ghost" href="{{ url_for('main.market') }}">Mandi Rates</a>
+  </div>
+</div>
+
+<div class="grid g-kpi">
+  <div class="card kpi">
+    <div class="top"><span class="lbl">CROP HEALTH INDEX</span>
+      <span class="card-icon" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span></div>
+    <div class="val">{{ score|round(0)|int }}<small>/100</small></div>
+    <div class="sub">
+      <div class="cell"><div class="lbl">Optimal range</div><div class="v">75–100</div></div>
+      <div class="cell"><div class="lbl">Grade</div><div class="v">{{ (health.grade if health else '—')[:1] }}</div></div>
+    </div>
+  </div>
+  <div class="card kpi">
+    <div class="top"><span class="lbl">HYPERLOCAL WEATHER</span>
+      <span class="card-icon amber" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 18a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6 1.6A4 4 0 0 0 7 18z"/></svg></span></div>
+    <div class="val">{{ '%.1f'|format(wx.temp_max if wx else 0) }}°<small>C · {{ (wx.condition or 'clear')|title if wx else 'Clear' }}</small></div>
+    <div class="sub">
+      <div class="cell"><div class="lbl">Humidity</div><div class="v">{{ wx.humidity|round(0)|int if wx else '—' }}%</div></div>
+      <div class="cell"><div class="lbl">Wind</div><div class="v">{{ wx.wind_kmph|round(0)|int if wx else '—' }} km/h</div></div>
+      <div class="cell"><div class="lbl">Rain 7d</div><div class="v">{{ ((forecast|sum(attribute='rainfall_mm')) if forecast else 0)|round(0)|int }} mm</div></div>
+    </div>
+  </div>
+  <div class="card kpi">
+    <div class="top"><span class="lbl">PREDICTED HARVEST YIELD</span>
+      <span class="card-icon blue" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span></div>
+    <div class="val">{{ '%.2f'|format((yield_pred.total_yield_q or 0)/10 if yield_pred else 0) }}<small>tonnes</small></div>
+    <div class="sub">
+      <div class="cell"><div class="lbl">Est. market value</div><div class="v">{{ inr((yield_pred.total_yield_q or 0) * 3000) if yield_pred else '₹0' }}</div></div>
+      <div class="cell"><div class="lbl">Model conf.</div><div class="v">{{ yield_pred.confidence_pct if yield_pred else '—' }}%</div></div>
+    </div>
+  </div>
+  <div class="card kpi">
+    <div class="top"><span class="lbl">SOIL TELEMETRY (NODE #5)</span>
+      <span class="card-icon orange" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.7s6.5 7 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 9.7 12 2.7 12 2.7z"/></svg></span></div>
+    <div class="val">{{ (soil.moisture if soil else 0)|round(0)|int }}%<small>VWC</small></div>
+    <div class="sub">
+      <div class="cell"><div class="lbl">Status</div><div class="v">{{ 'Adequate' if (soil.moisture if soil else 0) > 28 else 'Monitor' }}</div></div>
+      <div class="cell"><div class="lbl">pH</div><div class="v">{{ '%.1f'|format(soil.ph if soil else 0) }}</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid g-75" style="margin-top:14px">
+  <div class="card">
+    <div class="card-head">
+      <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V9"/><path d="M12 9C12 5 15 2 20 2c0 5-3 8-8 8z"/></svg></span>
+      <div class="t">CROP HEALTH DYNAMICS — VEGETATIVE GROWTH TO EARLY FRUIT-SET</div>
+      <div class="grow"></div>
+      <span class="chip green">NDVI twin trajectory · 60 d</span>
+    </div>
+    <div class="stages">
+      {% for s in stages %}
+      <div class="stage {{ s.state }}">
+        <div class="d">{{ s.days }}</div>
+        <div class="n">{{ s.name }}</div>
+        <div class="s">{% if s.state=='done' %}✓{% elif s.state=='now' %}●{% else %}○{% endif %} {{ s.sub }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <canvas id="stageChart" class="chart" height="150"
+      data-labels='{{ (((sim.trajectory[::3]|map(attribute="date")|list) if (sim and sim.trajectory) else []))|tojson }}'
+      data-values='{{ (((sim.trajectory[::3]|map(attribute="ndvi")|list) if (sim and sim.trajectory) else []))|tojson }}'
+      data-health='{{ (((sim.trajectory[::3]|map(attribute="health_score")|list) if (sim and sim.trajectory) else []))|tojson }}'></canvas>
+    <div class="tiny dim" style="margin-top:8px">Predicted peak health <b>{{ ((sim.final.health_score|round(0)|int) if (sim and sim.final) else 0) }}/100</b> at day {{ sim.days_ahead if sim else 0 }} · stage: {{ sim.stage if sim else '—' }} · twin engine: GDD + soil-water balance.</div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg></span>
+        <div class="t">FIELD OBSERVATION — LATEST LEAF SCAN</div>
+      </div>
+      {% if latest_scan %}
+      <div class="thumb" style="height:150px">
+        {% if latest_scan.image_path %}
+        <img src="{{ url_for('main.uploaded_file', path=latest_scan.image_path) }}" alt="latest leaf scan">
+        {% endif %}
+      </div>
+      <div style="margin-top:10px" class="tiny">
+        <div class="kv"><span class="k">CNN diagnosis (Zone B-12)</span><span class="v">{{ latest_scan.disease_name }} · {{ (latest_scan.confidence*100)|round(1) }}%</span></div>
+        <div class="kv"><span class="k">Severity</span><span class="v">{{ latest_scan.severity }}</span></div>
+        <div class="kv"><span class="k">Scanned</span><span class="v">{{ latest_scan.created_at[:16] }}</span></div>
+      </div>
+      {% else %}
+      <p class="dim tiny">No leaf scans yet — run the Edge AI module.</p>
+      {% endif %}
+      <a class="btn ghost sm block" style="margin-top:10px" href="{{ url_for('main.disease') }}">Review CNN saliency map →</a>
+    </div>
+    <div class="card pad-sm">
+      <div class="lbl" style="margin-bottom:8px">NUTRIENT TELEMETRY</div>
+      <div class="kv"><span class="k">Nitrogen</span><span class="v {{ 'dn' if (soil.nitrogen if soil else 0) < 100 else 'up' }}">{{ (soil.nitrogen if soil else 0)|round(0)|int }} kg/acre</span></div>
+      <div class="kv"><span class="k">Phosphorus</span><span class="v">{{ (soil.phosphorus if soil else 0)|round(0)|int }} kg/acre</span></div>
+      <div class="kv"><span class="k">Potassium</span><span class="v {{ 'dn' if (soil.potassium if soil else 0) < 120 else 'up' }}">{{ (soil.potassium if soil else 0)|round(0)|int }} kg/acre</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:14px">
+  <div class="card-head">
+    <span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/></svg></span>
+    <div class="t">ACTIVE AI PRESCRIPTIONS &amp; HIGH-PRIORITY ALERTS</div>
+    <div class="grow"></div>
+    <span class="chip">{{ alerts|length }} open</span>
+  </div>
+  <div class="grid g-3">
+    {% for r in prescriptions %}
+    <div class="card soft pad-sm" style="display:flex;flex-direction:column;gap:8px">
+      <div><span class="badge {{ 'red' if r.priority=='high' else 'amber' }}">{{ r.priority }} · {{ r.kind }}</span>
+        <span class="tiny dim">{{ r.field_name or '' }}</span></div>
+      <div style="font-weight:800;font-size:13px">{{ r.title }}</div>
+      <div class="tiny dim" style="flex:1">{{ r.detail[:170] }}</div>
+      <form method="post" action="{{ url_for('main.act', rec_id=r.id) }}">
+        {% if r.kind == 'irrigation' %}
+        <button class="btn sm block">Authorize Irrigation (06:00 AM)</button>
+        {% elif r.kind == 'pesticide' %}
+        <button class="btn orange sm block">Deploy Preventative Bio-Fungicide</button>
+        {% elif r.kind == 'market' %}
+        <a class="btn ghost sm block" href="{{ url_for('main.dss_page') }}">Open Mandi Matrix</a>
+        {% else %}
+        <button class="btn sm block">Mark Applied / Log Dosage</button>
+        {% endif %}
+      </form>
+    </div>
+    {% else %}
+    <p class="dim tiny">No open prescriptions. Run the DSS to generate the ranked action list.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="ticker" style="margin-top:14px">
+  <span class="tag">LIVE MANDI PRICES (₹/Q)</span>
+  <div class="items">
+    {% for p in prices %}
+    <span class="it"><b>{{ p.crop }}</b> {{ inr(p.price) }} <span class="{{ 'up' if p.change_pct>=0 else 'dn' }}">{{ '▲' if p.change_pct>=0 else '▼' }} {{ p.change_pct|abs }}%</span></span>
+    {% endfor %}
+    <span class="it dim">source: synthetic e-NAM feed · Nashik district mandis</span>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }}{% endblock %}
+{% block bare %}
+<div class="auth-wrap">
+  <div class="auth-card" style="grid-template-columns:1fr;max-width:520px">
+    <div class="auth-form">
+      <div class="lbl" style="color:var(--orange-600)">HTTP {{ code }}</div>
+      <h2 style="margin:6px 0 8px">{{ 'Page not found' if code==404 else 'Server error' }}</h2>
+      <p class="dim tiny">{{ message }}</p>
+      <a class="btn" style="margin-top:16px" href="{{ url_for('main.dashboard') }}">← Back to dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="card" style="max-width:520px">
+  <div class="lbl" style="color:var(--orange-600)">HTTP {{ code }}</div>
+  <h2 style="margin:6px 0 8px">{{ 'Page not found' if code==404 else 'Server error' }}</h2>
+  <p class="dim tiny">{{ message }}</p>
+  <a class="btn" style="margin-top:16px" href="{{ url_for('main.dashboard') }}">← Back to dashboard</a>
+</div>
+{% endblock %}

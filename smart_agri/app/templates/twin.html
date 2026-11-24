@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}Digital Twin & Sensors{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">HI-FIDELITY PRECISION TELEMETRY FIELD MODEL · LORAWAN V1.4</div>
+    <h1>Interactive Farm Digital Twin</h1>
+    <div class="sub">Plot {{ field.id if field else '—' }}: {{ '%.1f'|format(field.area_acres if field else 0) }} Acres {{ field.crop if field else '' }} · 20.0° N, 73.7° E · {{ farm.village or 'Nashik' }} · AI synchronised GDD / Kc / soil-water twin · scenario engine online</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <span class="chip green">ACTIVE SENSOR ARRAY · 12 LORA NODES</span>
+    <span class="chip">{{ sim_count }} in-silico runs logged</span>
+    <a class="btn ghost" href="{{ url_for('main.twin', field_id=field.id if field else 0, recal=1) }}">↻ Recalibrate Sensor Mesh</a>
+  </div>
+</div>
+
+{% if not field %}
+<div class="card"><p class="dim">Add a field to initialise the twin.</p></div>
+{% else %}
+<div class="grid g-75">
+  <div class="stack">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg></span>
+        <div class="t">SPATIAL CANOPY HEALTH &amp; SUB-SURFACE MATRIX</div>
+        <div class="grow"></div>
+        <span class="chip green">● Crop Canopy</span><span class="chip amber">● Moisture Isobars</span><span class="chip blue">● Sub-surface</span>
+      </div>
+      <div class="grid g-2">
+        {% for s in sectors %}
+        <div class="sector {{ 'warn' if s.status=='alert' }}">
+          <div class="head">
+            <span class="code">{{ s.code }}</span>
+            <div class="name">{{ s.name }}</div>
+            <div class="grow" style="flex:1"></div>
+            {% if s.status=='alert' %}<span class="badge red">⚠ Infection Zone</span>
+            {% elif s.status=='watch' %}<span class="badge amber">Watch</span>
+            {% else %}<span class="badge green">Nominal</span>{% endif %}
+          </div>
+          <div class="desc">{{ s.note }}</div>
+          <div class="npk">{{ s.npk_n|round(0)|int }}-{{ s.npk_p|round(0)|int }}-{{ s.npk_k|round(0)|int }} <small>N-P-K mg/kg</small></div>
+          <div class="metric-row"><span class="k">Plant Health Idx</span>
+            <span class="bar"><i class="{{ 'bad' if s.health_idx<60 else ('warn' if s.health_idx<80 else '') }}" style="width:{{ s.health_idx }}%"></i></span>
+            <span class="v">{{ s.health_idx|round(0)|int }}/100</span></div>
+          <div class="metric-row"><span class="k">Micro-Moisture</span>
+            <span class="bar"><i class="{{ 'warn' if s.vwc>36 else '' }}" style="width:{{ (s.vwc/50*100)|round(0)|int }}%"></i></span>
+            <span class="v">{{ s.vwc }}% VWC</span></div>
+          <div class="metric-row"><span class="k">Root-zone temp</span>
+            <span class="bar"><i style="width:{{ (s.soil_temp_c/30*100)|round(0)|int }}%"></i></span>
+            <span class="v">{{ s.soil_temp_c }}°C</span></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg></span>
+        <div class="t">REAL-TIME CLOSED-LOOP FEEDBACK — PATHOGEN-TRIGGERED SOIL &amp; FLOW AUTOMATION</div>
+      </div>
+      <p class="tiny dim" style="margin-bottom:12px">High-resolution telemetry examined at the sector level identifies conidia-bearing
+        conidiophores of <b>Alternaria solani</b> in SEC-C2. The digital twin has dynamically adjusted the irrigation micro-zones:</p>
+      <div class="grid g-3">
+        <div class="card soft pad-sm">
+          <div class="lbl">AUTOMATED RULE #1</div>
+          <div style="font-weight:800;font-size:13px;margin:6px 0 4px">Reduce drip flow −20%</div>
+          <div class="tiny dim">Infection-zone humidity held below the 70% germination threshold for A. solani.</div>
+        </div>
+        <div class="card soft pad-sm">
+          <div class="lbl">AUTOMATED RULE #2</div>
+          <div style="font-weight:800;font-size:13px;margin:6px 0 4px">Boost rows 12–16 to +4 mm</div>
+          <div class="tiny dim">Compensates the water stress forecast in the West hydro-drip block.</div>
+        </div>
+        <div class="card soft pad-sm">
+          <div class="lbl">AUTOMATED RULE #3</div>
+          <div style="font-weight:800;font-size:13px;margin:6px 0 4px">Mancozeb 75% WP task</div>
+          <div class="tiny dim">Protectant spray queued for the next dry morning window (twin-verified).</div>
+        </div>
+      </div>
+      <div class="netbox">
+        <div><div class="lbl">PREDICTED DRY-MATTER RECOVERY (45 D)</div>
+          <div class="v" id="recovery">—<span style="font-size:13px">/100</span></div></div>
+        <div style="text-align:right">
+          <div class="tiny" style="color:#b7d2b0" id="simdelta">run the in-silico forecast →</div>
+          <button class="btn orange" id="runSim" data-field="{{ field.id }}" style="margin-top:6px">Execute In-Silico Forecast</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+        <div class="t">TWIN HARVEST WINDOW &amp; SCENARIO DIVERGENCE</div></div>
+      <div class="kv"><span class="k">Twin harvest date (95% GDD)</span><span class="v">{{ (harvest.twin_harvest_date if harvest else '—') }}</span></div>
+      <div class="kv"><span class="k">Planned harvest</span><span class="v">{{ (harvest.planned_harvest if harvest else '—') or '—' }}</span></div>
+      <div class="kv"><span class="k">Expected yield</span><span class="v">{{ (harvest.expected_yield_q if harvest else 0) }} q</span></div>
+      <div class="kv"><span class="k">Best scenario</span><span class="v up">{{ (comparison.best_scenario if comparison else 'Baseline') }} (+{{ (comparison.best_yield_gain_pct if comparison else 0) }}%)</span></div>
+      <canvas id="twinChart" class="chart" height="140" style="margin-top:10px"
+        data-labels='{{ (((sim.trajectory[::4]|map(attribute="date")|list) if (sim and sim.trajectory) else []))|tojson }}'
+        data-health='{{ (((sim.trajectory[::4]|map(attribute="health_score")|list) if (sim and sim.trajectory) else []))|tojson }}'
+        data-stress='{{ (((sim.trajectory[::4]|map(attribute="water_stress")|list) if (sim and sim.trajectory) else []))|tojson }}'></canvas>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-head"><span class="card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></svg></span>
+        <div class="t">MICROCLIMATE TELEMETRY</div></div>
+      <div class="readout">
+        <div class="cell"><div class="lbl">AMBIENT</div><div class="v">{{ '%.1f'|format(micro.temp_max if micro else 0) }}°C</div><div class="x">canopy sensor avg</div></div>
+        <div class="cell"><div class="lbl">ROOT-ZONE SOIL</div><div class="v">{{ sectors[2].soil_temp_c if sectors else '—' }}°C</div><div class="x">10 cm probe</div></div>
+        <div class="cell"><div class="lbl">AMBIENT RH</div><div class="v">{{ (micro.humidity if micro else 0)|round(0)|int }}%</div><div class="x">threshold 70%</div></div>
+        <div class="cell"><div class="lbl">SOLAR RAD.</div><div class="v">{{ '%.1f'|format(micro.solar_mj if micro else 0) }}</div><div class="x">MJ/m²/day</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1 14h6M9 8h6M17 16h6"/></svg></span>
+        <div class="t">PREDICTIVE AGRONOMIC SIMULATOR</div></div>
+      <p class="tiny dim" style="margin-bottom:12px">Simulate prospective microclimate disturbances and observe the twin's divergence before touching the physical field.</p>
+      <div class="field">
+        <label>Simulated pathogen pressure (+<span id="pval">12</span> blight index)</label>
+        <input type="range" id="pathogen" min="0" max="30" value="12">
+      </div>
+      <div class="field">
+        <label>Extra irrigation (+<span id="ival">30</span> mm/week)</label>
+        <input type="range" id="irrig" min="0" max="120" step="5" value="30">
+      </div>
+      <div class="field" style="display:flex;align-items:center;gap:10px">
+        <label class="switch"><input type="checkbox" id="fungi" checked><span class="track"></span></label>
+        <div><b style="font-size:12px">Simulate fungicide programme</b><div class="tiny dim">Mancozeb 75% WP @ 2.5 g/L, 2 sprays</div></div>
+      </div>
+      <button class="btn dark block" id="runSim2" data-field="{{ field.id }}">Run Scenario →</button>
+    </div>
+
+    <div class="card pad-sm">
+      <div class="lbl" style="margin-bottom:8px">SCENARIO MATRIX (60 D)</div>
+      {% for k, v in comparison.scenarios.items() %}
+      <div class="kv"><span class="k">{{ v.notes[:34] }}</span>
+        <span class="v {{ 'up' if v.yield_delta_vs_baseline_pct>0 else ('dn' if v.yield_delta_vs_baseline_pct<0 else '') }}">{{ v.yield_delta_vs_baseline_pct }}%</span></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

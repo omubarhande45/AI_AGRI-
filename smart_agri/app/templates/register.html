@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block bare %}
+<div class="auth-wrap">
+  <div class="auth-card" style="grid-template-columns:1fr">
+    <div class="auth-form" style="max-width:640px;margin:0 auto;width:100%">
+      <div class="brand" style="padding:0;margin-bottom:14px">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#bfe8c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21v-8"/><path d="M12 13c0-4 3-7 8-7 0 4-3 7-8 7z" fill="#2f8f63" stroke="#bfe8c8"/>
+            <path d="M12 13c0-3-2.5-5-6-5 0 3 2.5 5 6 5z" fill="#1e5b41" stroke="#bfe8c8"/>
+          </svg>
+        </div>
+        <div><div class="brand-name">AgriSmart<em>AI</em></div>
+        <div class="brand-sub">DECISION SUPPORT SYSTEM</div></div>
+      </div>
+      <h2>Create farmer account</h2>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+      {% endwith %}
+      <form method="post">
+        <div class="form-row">
+          <div class="field"><label>Username</label><input name="username" required></div>
+          <div class="field"><label>Password (≥ 6 chars)</label><input name="password" type="password" required></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Full name</label><input name="full_name" required></div>
+          <div class="field"><label>Farm name</label><input name="farm_name" value="My Farm"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Village</label><input name="village" placeholder="Villaville"></div>
+          <div class="field"><label>District</label><input name="district" value="Nashik"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Total area (acres)</label><input name="total_area" type="number" step="0.1" value="2.5"></div>
+          <div class="field"><label>Soil type</label>
+            <select name="soil_type">
+              <option>Medium black (loam)</option><option>Heavy black (regur)</option>
+              <option>Sandy loam</option><option>Laterite</option><option>Alluvial</option>
+            </select></div>
+        </div>
+        <div class="field"><label>Irrigation</label>
+          <select name="irrigation"><option>drip</option><option>sprinkler</option><option>flood</option><option>rainfed</option></select></div>
+        <button class="btn block">Create account →</button>
+      </form>
+      <p class="tiny dim" style="margin-top:12px">Already registered? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

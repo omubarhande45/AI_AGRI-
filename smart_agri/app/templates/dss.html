@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}AI Yield & DSS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">◈ UNIFIED DSS INTERFACE · PROJECTION V3.2</div>
+    <h1>Integrated Decision Support System (DSS) &amp; Market Intelligence</h1>
+    <div class="sub">Zilla–Taluka graded AI recommendations · {{ farm.district or 'Nashik' }}, Maharashtra 422 013 · farm score {{ pack.farm_score }}/100 ({{ pack.grade }})</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <span class="status-chip">MODEL CERTAINTY R² = {{ yield_r2 }}</span>
+    <span class="status-chip">TELEMETRY FRESHNESS · 12 MIN</span>
+    <span class="status-chip">DECISIONS · {{ pack.generated_at[:16] }}</span>
+  </div>
+</div>
+
+<div class="directive" style="margin-bottom:14px">
+  <div class="body">
+    <span class="tag">✦ AGRI-ADVISORY COMPLIANCE · 100% SCORE VERIFIED</span>
+    <h2>Unified Agronomic &amp; Market Directive</h2>
+    <p>Your <strong>{{ primary.crop if primary else '—' }}</strong> crop on <strong>{{ primary.name if primary else '—' }}</strong>
+      shows {% if sick %}<strong>{{ (sick.confidence*100)|round(0)|int }}% {{ sick.disease_name }}</strong> pressure{% else %}<strong>no active pathogen</strong> pressure{% endif %}.
+      The gradient-boosting core (R² {{ yield_r2 }}) projects <strong>{{ '%.2f'|format((yield_pred.total_yield_q or 0)/10 if yield_pred else 0) }} t</strong>
+      against a regional mean of {{ '%.2f'|format(((yield_pred.typical_yield_kg_per_acre or 0) * (primary.area_acres if primary else 1))/1000 if yield_pred else 0) }} t.
+      Directive: {% if irr and irr.apply_mm %}apply <strong>{{ irr.apply_mm }} mm</strong> in {{ irr.days_until_irrigation }} d ({% endif %}{% if irr %}{{ irr.system }}{% endif %}{% if irr and irr.apply_mm %}){% endif %}{% if spray %}, treat with <strong>{{ spray.title }}</strong>{% endif %},
+      and destinate with <strong>{{ (mandi_rows[0].mandi if mandi_rows else 'nearest mandi') }}</strong> for
+      {{ inr(mandi_rows[0].net_after_transit_loss_inr_q) if mandi_rows else '—' }}/q best net realisation.</p>
+    <div class="checks">
+      <span>✓ PM-KISAN COMPLIANT</span><span>✓ e-NAM INTEROPERABLE</span><span>✓ ICAR-CCRI ALIGNED</span>
+    </div>
+  </div>
+  <div class="side">
+    <div class="lbl">PROJECTED MARGIN</div>
+    <div class="big">+{{ inr(fin.profit_per_acre_inr if fin else 0) }}</div>
+    <div class="tiny" style="color:#9fc39a">per acre · {{ fin.verdict[:38] if fin else '' }}</div>
+    <a class="btn orange" style="margin-top:10px" href="{{ url_for('main.dashboard') }}"> Deploy Prescription</a>
+  </div>
+</div>
+
+<div class="grid g-75">
+  <div class="stack">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.5-.8 2.6-1.5 3.5-.6.8-.5 1.5-.5 2.5h-4c0-1-.1-1.7-.5-2.5C8.8 8.6 8 7.5 8 6a4 4 0 0 1 4-4z"/><path d="M10 15h4M10 19h4M11 22h2"/></svg></span>
+        <div class="t">ML YIELD MODEL CORE — HISTOGRAM-GRADIENT REGRESSOR (R² = {{ yield_r2 }})</div>
+        <div class="grow"></div><span class="chip green">Trained on 40k regional trials</span>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:10px">
+        <div><div class="lbl">FARM AREA</div><div class="mono" style="font-weight:800;font-size:16px">{{ '%.1f'|format(primary.area_acres if primary else 0) }} <span class="tiny dim">ac</span></div></div>
+        <div><div class="lbl">CROP AGE</div><div class="mono" style="font-weight:800;font-size:16px">{{ crop_age if crop_age else '—' }} <span class="tiny dim">days</span></div></div>
+        <div><div class="lbl">SOIL MOISTURE</div><div class="mono" style="font-weight:800;font-size:16px">{{ (soil.moisture if soil else 0)|round(0)|int }}% <span class="tiny dim">humid</span></div></div>
+        <div><div class="lbl">DISEASE SEV.</div><div class="mono" style="font-weight:800;font-size:16px;color:var(--orange-600)">{{ (sick.confidence*100)|round(0)|int if sick else 0 }}%</div></div>
+        <div><div class="lbl">NPK ESTATE</div><div class="mono" style="font-weight:800;font-size:16px">{{ (soil.nitrogen if soil else 0)|round(0)|int }}-{{ (soil.phosphorus if soil else 0)|round(0)|int }}-{{ (soil.potassium if soil else 0)|round(0)|int }}</div></div>
+      </div>
+      <hr class="divider">
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:230px">
+          <div class="lbl" style="margin-bottom:6px">YIELD PROJECTION VS. REGIONAL MEAN</div>
+          <div class="kv"><span class="k">ML projected ({{ primary.crop if primary else '—' }})</span><span class="v up">{{ '%.2f'|format((yield_pred.total_yield_q or 0)/10 if yield_pred else 0) }} t</span></div>
+          <div class="kv"><span class="k">Regional mean baseline</span><span class="v">{{ '%.2f'|format((((yield_pred.typical_yield_kg_per_acre or 0) * (primary.area_acres if primary else 1))/1000) if yield_pred else 0) }} t</span></div>
+          <div class="kv"><span class="k">Band ({{ yield_pred.confidence_pct if yield_pred else '—' }}% conf.)</span><span class="v">{{ yield_pred.yield_range_kg_per_acre[0] if yield_pred else '—' }}–{{ yield_pred.yield_range_kg_per_acre[1] if yield_pred else '—' }} kg/ac</span></div>
+          <div class="kv"><span class="k">Growth stage</span><span class="v">{{ irr.growth_stage if irr else '—' }}</span></div>
+        </div>
+        <div style="text-align:center">
+          <canvas id="confRing" width="120" height="120" data-val="{{ yield_pred.confidence_pct if yield_pred else 0 }}"></canvas>
+          <div class="tiny dim">PROJECTED OUTPUT<br>{{ '%.2f'|format((yield_pred.total_yield_q or 0)/10 if yield_pred else 0) }} tonnes</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <div class="t">HYPERLOCAL MANDI COMPARISON &amp; DISTANCE MATRIX</div>
+        <div class="grow"></div><span class="chip">GAUSSIAN-WEIGHTED · 30 D FORECAST</span>
+      </div>
+      <table class="tbl">
+        <tr><th></th><th>Mandi</th><th>Distance</th><th>Trend</th><th style="text-align:right">Modal ₹/q</th><th style="text-align:right">Net after costs</th></tr>
+        {% for m in mandi_rows %}
+        <tr class="{{ 'hl' if loop.index==1 }}">
+          <td>{% if loop.index==1 %}<span class="badge green">★ Best</span>{% else %}<span class="badge gray">#{{ loop.index }}</span>{% endif %}</td>
+          <td><b>{{ m.mandi }}</b><div class="tiny dim">{{ m.district }}</div></td>
+          <td><span class="chip">{{ m.distance_km }} km</span></td>
+          <td><span class="chip {{ 'green' if m.trend=='rising' else ('red' if m.trend=='falling' else 'amber') }}">{{ m.trend }} {{ m.trend_pct }}%</span></td>
+          <td class="num">{{ inr(m.current_price_inr_q) }}</td>
+          <td class="num">{{ inr(m.net_after_transit_loss_inr_q) }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <p class="tiny dim" style="margin-top:8px">Net = forecast price − commission − transport − transit spoilage (shelf-life weighted). Transport at ₹2.1/km + ₹40 handling.</p>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card pad-sm">
+      <div class="card-head" style="margin-bottom:8px"><span class="lbl">CROP MICROCLIMATE · {{ farm.village or 'Nashik' }}</span></div>
+      <div class="readout">
+        <div class="cell"><div class="v">{{ '%.1f'|format(wx.temp_max if wx else 0) }}°C</div><div class="x">canopy ambient</div></div>
+        <div class="cell"><div class="v">{{ (wx.humidity if wx else 0)|round(0)|int }}%</div><div class="x">relative humidity</div></div>
+      </div>
+      <div class="tiny dim" style="margin-top:8px">{{ '⚠ Humidity above the 70% fungal-germination threshold — ventilation pruning advised.' if (wx.humidity if wx else 0) > 70 else 'Humidity within the safe band for the current stage.' }}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+        <div class="t">FINANCIAL SYNTHESIS</div><div class="grow"></div><span class="chip green">Model: {{ fin.mandi if fin else '—' }}</span></div>
+      <div class="kv"><span class="k">Expected gross revenue</span><span class="v up">{{ inr(fin.gross_revenue_inr if fin else 0) }}</span></div>
+      <div class="kv"><span class="k">Logistics &amp; mandi costs</span><span class="v dn">−{{ inr(((fin.yield_q or 0) * ((mandi_rows[0].commission_inr_q or 0) + (mandi_rows[0].transport_inr_per_q or 0))) if fin and mandi_rows else 0) }}</span></div>
+      <div class="kv"><span class="k">Agri-inputs (cultivation cost)</span><span class="v dn">−{{ inr(fin.total_cost_inr if fin else 0) }}</span></div>
+      <div class="kv"><span class="k">Break-even yield</span><span class="v">{{ fin.breakeven_yield_q if fin else '—' }} q</span></div>
+      <div class="netbox">
+        <div><div class="lbl">NET PROJECTED FARMER PROFIT</div>
+          <div class="v">{{ inr(fin.net_profit_inr if fin else 0) }}</div></div>
+        <div class="tiny" style="color:#b7d2b0;text-align:right">{{ fin.verdict[:44] if fin else '' }}<br>ROI {{ fin.roi_pct if fin else '—' }}%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <div class="t">GENERATE COMPREHENSIVE PDF FARM REPORT</div></div>
+      <p class="tiny dim">Compiles the full agronomic record — health scores, ranked prescriptions, yield &amp; profit outlook and the mandi matrix — into an A4 certificate using the reportlab pipeline.</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <a class="btn ghost sm" href="{{ url_for('main.reports') }}">Preview Summary</a>
+        <a class="btn sm" href="{{ url_for('main.reports_farm_pdf') }}">Generate Official Report (PDF)</a>
+      </div>
+    </div>
+
+    <div class="card pad-sm">
+      <div class="lbl" style="margin-bottom:8px">RANKED ACTION QUEUE ({{ pack.actions|length }})</div>
+      {% for a in pack.actions[:5] %}
+      <div class="kv"><span class="k">{{ a.title[:42] }}</span><span class="v"><span class="badge {{ 'red' if a.priority=='high' else 'amber' }}">{{ a.priority }}</span></span></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

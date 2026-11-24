@@ -1,0 +1,1186 @@
+{
+  "source": "PlantVillage held-out test split",
+  "count": 228,
+  "class_names": [
+    "Apple__Apple_scab",
+    "Apple__Black_rot",
+    "Apple__Cedar_apple_rust",
+    "Apple___healthy",
+    "Blueberry___healthy",
+    "Cherry_(including_sour)___Powdery_mildew",
+    "Cherry_(including_sour)___healthy",
+    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
+    "Corn_(maize)___Common_rust_",
+    "Corn_(maize)___Northern_Leaf_Blight",
+    "Corn_(maize)___healthy",
+    "Grape___Black_rot",
+    "Grape___Esca_(Black_Measles)",
+    "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)",
+    "Grape___healthy",
+    "Orange___Haunglongbing_(Citrus_greening)",
+    "Peach___Bacterial_spot",
+    "Peach___healthy",
+    "Pepper,_bell___Bacterial_spot",
+    "Pepper,_bell___healthy",
+    "Potato___Early_blight",
+    "Potato___Late_blight",
+    "Potato___healthy",
+    "Raspberry___healthy",
+    "Soybean___healthy",
+    "Squash___Powdery_mildew",
+    "Strawberry___Leaf_scorch",
+    "Strawberry___healthy",
+    "Tomato___Bacterial_spot",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___Leaf_Mold",
+    "Tomato___Septoria_leaf_spot",
+    "Tomato___Spider_mites Two-spotted_spider_mite",
+    "Tomato___Target_Spot",
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+    "Tomato___Tomato_mosaic_virus",
+    "Tomato___healthy"
+  ],
+  "images": [
+    {
+      "file": "00_73.jpg",
+      "label": 0,
+      "class": "Apple__Apple_scab"
+    },
+    {
+      "file": "00_85.jpg",
+      "label": 0,
+      "class": "Apple__Apple_scab"
+    },
+    {
+      "file": "00_113.jpg",
+      "label": 0,
+      "class": "Apple__Apple_scab"
+    },
+    {
+      "file": "00_116.jpg",
+      "label": 0,
+      "class": "Apple__Apple_scab"
+    },
+    {
+      "file": "00_77.jpg",
+      "label": 0,
+      "class": "Apple__Apple_scab"
+    },
+    {
+      "file": "00_99.jpg",
+      "label": 0,
+      "class": "Apple__Apple_scab"
+    },
+    {
+      "file": "01_189.jpg",
+      "label": 1,
+      "class": "Apple__Black_rot"
+    },
+    {
+      "file": "01_144.jpg",
+      "label": 1,
+      "class": "Apple__Black_rot"
+    },
+    {
+      "file": "01_128.jpg",
+      "label": 1,
+      "class": "Apple__Black_rot"
+    },
+    {
+      "file": "01_238.jpg",
+      "label": 1,
+      "class": "Apple__Black_rot"
+    },
+    {
+      "file": "01_232.jpg",
+      "label": 1,
+      "class": "Apple__Black_rot"
+    },
+    {
+      "file": "01_229.jpg",
+      "label": 1,
+      "class": "Apple__Black_rot"
+    },
+    {
+      "file": "02_270.jpg",
+      "label": 2,
+      "class": "Apple__Cedar_apple_rust"
+    },
+    {
+      "file": "02_266.jpg",
+      "label": 2,
+      "class": "Apple__Cedar_apple_rust"
+    },
+    {
+      "file": "02_267.jpg",
+      "label": 2,
+      "class": "Apple__Cedar_apple_rust"
+    },
+    {
+      "file": "02_307.jpg",
+      "label": 2,
+      "class": "Apple__Cedar_apple_rust"
+    },
+    {
+      "file": "02_277.jpg",
+      "label": 2,
+      "class": "Apple__Cedar_apple_rust"
+    },
+    {
+      "file": "02_291.jpg",
+      "label": 2,
+      "class": "Apple__Cedar_apple_rust"
+    },
+    {
+      "file": "03_571.jpg",
+      "label": 3,
+      "class": "Apple___healthy"
+    },
+    {
+      "file": "03_537.jpg",
+      "label": 3,
+      "class": "Apple___healthy"
+    },
+    {
+      "file": "03_513.jpg",
+      "label": 3,
+      "class": "Apple___healthy"
+    },
+    {
+      "file": "03_631.jpg",
+      "label": 3,
+      "class": "Apple___healthy"
+    },
+    {
+      "file": "03_567.jpg",
+      "label": 3,
+      "class": "Apple___healthy"
+    },
+    {
+      "file": "03_421.jpg",
+      "label": 3,
+      "class": "Apple___healthy"
+    },
+    {
+      "file": "04_648.jpg",
+      "label": 4,
+      "class": "Blueberry___healthy"
+    },
+    {
+      "file": "04_772.jpg",
+      "label": 4,
+      "class": "Blueberry___healthy"
+    },
+    {
+      "file": "04_821.jpg",
+      "label": 4,
+      "class": "Blueberry___healthy"
+    },
+    {
+      "file": "04_651.jpg",
+      "label": 4,
+      "class": "Blueberry___healthy"
+    },
+    {
+      "file": "04_672.jpg",
+      "label": 4,
+      "class": "Blueberry___healthy"
+    },
+    {
+      "file": "04_894.jpg",
+      "label": 4,
+      "class": "Blueberry___healthy"
+    },
+    {
+      "file": "05_1049.jpg",
+      "label": 5,
+      "class": "Cherry_(including_sour)___Powdery_mildew"
+    },
+    {
+      "file": "05_1033.jpg",
+      "label": 5,
+      "class": "Cherry_(including_sour)___Powdery_mildew"
+    },
+    {
+      "file": "05_997.jpg",
+      "label": 5,
+      "class": "Cherry_(including_sour)___Powdery_mildew"
+    },
+    {
+      "file": "05_1130.jpg",
+      "label": 5,
+      "class": "Cherry_(including_sour)___Powdery_mildew"
+    },
+    {
+      "file": "05_1111.jpg",
+      "label": 5,
+      "class": "Cherry_(including_sour)___Powdery_mildew"
+    },
+    {
+      "file": "05_1072.jpg",
+      "label": 5,
+      "class": "Cherry_(including_sour)___Powdery_mildew"
+    },
+    {
+      "file": "06_1323.jpg",
+      "label": 6,
+      "class": "Cherry_(including_sour)___healthy"
+    },
+    {
+      "file": "06_1275.jpg",
+      "label": 6,
+      "class": "Cherry_(including_sour)___healthy"
+    },
+    {
+      "file": "06_1169.jpg",
+      "label": 6,
+      "class": "Cherry_(including_sour)___healthy"
+    },
+    {
+      "file": "06_1188.jpg",
+      "label": 6,
+      "class": "Cherry_(including_sour)___healthy"
+    },
+    {
+      "file": "06_1185.jpg",
+      "label": 6,
+      "class": "Cherry_(including_sour)___healthy"
+    },
+    {
+      "file": "06_1309.jpg",
+      "label": 6,
+      "class": "Cherry_(including_sour)___healthy"
+    },
+    {
+      "file": "07_1359.jpg",
+      "label": 7,
+      "class": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot"
+    },
+    {
+      "file": "07_1397.jpg",
+      "label": 7,
+      "class": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot"
+    },
+    {
+      "file": "07_1385.jpg",
+      "label": 7,
+      "class": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot"
+    },
+    {
+      "file": "07_1347.jpg",
+      "label": 7,
+      "class": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot"
+    },
+    {
+      "file": "07_1413.jpg",
+      "label": 7,
+      "class": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot"
+    },
+    {
+      "file": "07_1431.jpg",
+      "label": 7,
+      "class": "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot"
+    },
+    {
+      "file": "08_1600.jpg",
+      "label": 8,
+      "class": "Corn_(maize)___Common_rust_"
+    },
+    {
+      "file": "08_1610.jpg",
+      "label": 8,
+      "class": "Corn_(maize)___Common_rust_"
+    },
+    {
+      "file": "08_1456.jpg",
+      "label": 8,
+      "class": "Corn_(maize)___Common_rust_"
+    },
+    {
+      "file": "08_1547.jpg",
+      "label": 8,
+      "class": "Corn_(maize)___Common_rust_"
+    },
+    {
+      "file": "08_1444.jpg",
+      "label": 8,
+      "class": "Corn_(maize)___Common_rust_"
+    },
+    {
+      "file": "08_1585.jpg",
+      "label": 8,
+      "class": "Corn_(maize)___Common_rust_"
+    },
+    {
+      "file": "09_1744.jpg",
+      "label": 9,
+      "class": "Corn_(maize)___Northern_Leaf_Blight"
+    },
+    {
+      "file": "09_1695.jpg",
+      "label": 9,
+      "class": "Corn_(maize)___Northern_Leaf_Blight"
+    },
+    {
+      "file": "09_1791.jpg",
+      "label": 9,
+      "class": "Corn_(maize)___Northern_Leaf_Blight"
+    },
+    {
+      "file": "09_1806.jpg",
+      "label": 9,
+      "class": "Corn_(maize)___Northern_Leaf_Blight"
+    },
+    {
+      "file": "09_1799.jpg",
+      "label": 9,
+      "class": "Corn_(maize)___Northern_Leaf_Blight"
+    },
+    {
+      "file": "09_1841.jpg",
+      "label": 9,
+      "class": "Corn_(maize)___Northern_Leaf_Blight"
+    },
+    {
+      "file": "10_1958.jpg",
+      "label": 10,
+      "class": "Corn_(maize)___healthy"
+    },
+    {
+      "file": "10_1922.jpg",
+      "label": 10,
+      "class": "Corn_(maize)___healthy"
+    },
+    {
+      "file": "10_1959.jpg",
+      "label": 10,
+      "class": "Corn_(maize)___healthy"
+    },
+    {
+      "file": "10_1905.jpg",
+      "label": 10,
+      "class": "Corn_(maize)___healthy"
+    },
+    {
+      "file": "10_1963.jpg",
+      "label": 10,
+      "class": "Corn_(maize)___healthy"
+    },
+    {
+      "file": "10_2058.jpg",
+      "label": 10,
+      "class": "Corn_(maize)___healthy"
+    },
+    {
+      "file": "11_2261.jpg",
+      "label": 11,
+      "class": "Grape___Black_rot"
+    },
+    {
+      "file": "11_2328.jpg",
+      "label": 11,
+      "class": "Grape___Black_rot"
+    },
+    {
+      "file": "11_2231.jpg",
+      "label": 11,
+      "class": "Grape___Black_rot"
+    },
+    {
+      "file": "11_2206.jpg",
+      "label": 11,
+      "class": "Grape___Black_rot"
+    },
+    {
+      "file": "11_2251.jpg",
+      "label": 11,
+      "class": "Grape___Black_rot"
+    },
+    {
+      "file": "11_2242.jpg",
+      "label": 11,
+      "class": "Grape___Black_rot"
+    },
+    {
+      "file": "12_2451.jpg",
+      "label": 12,
+      "class": "Grape___Esca_(Black_Measles)"
+    },
+    {
+      "file": "12_2365.jpg",
+      "label": 12,
+      "class": "Grape___Esca_(Black_Measles)"
+    },
+    {
+      "file": "12_2565.jpg",
+      "label": 12,
+      "class": "Grape___Esca_(Black_Measles)"
+    },
+    {
+      "file": "12_2353.jpg",
+      "label": 12,
+      "class": "Grape___Esca_(Black_Measles)"
+    },
+    {
+      "file": "12_2448.jpg",
+      "label": 12,
+      "class": "Grape___Esca_(Black_Measles)"
+    },
+    {
+      "file": "12_2607.jpg",
+      "label": 12,
+      "class": "Grape___Esca_(Black_Measles)"
+    },
+    {
+      "file": "13_2730.jpg",
+      "label": 13,
+      "class": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)"
+    },
+    {
+      "file": "13_2801.jpg",
+      "label": 13,
+      "class": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)"
+    },
+    {
+      "file": "13_2720.jpg",
+      "label": 13,
+      "class": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)"
+    },
+    {
+      "file": "13_2635.jpg",
+      "label": 13,
+      "class": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)"
+    },
+    {
+      "file": "13_2757.jpg",
+      "label": 13,
+      "class": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)"
+    },
+    {
+      "file": "13_2679.jpg",
+      "label": 13,
+      "class": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)"
+    },
+    {
+      "file": "14_2904.jpg",
+      "label": 14,
+      "class": "Grape___healthy"
+    },
+    {
+      "file": "14_2854.jpg",
+      "label": 14,
+      "class": "Grape___healthy"
+    },
+    {
+      "file": "14_2909.jpg",
+      "label": 14,
+      "class": "Grape___healthy"
+    },
+    {
+      "file": "14_2843.jpg",
+      "label": 14,
+      "class": "Grape___healthy"
+    },
+    {
+      "file": "14_2879.jpg",
+      "label": 14,
+      "class": "Grape___healthy"
+    },
+    {
+      "file": "14_2878.jpg",
+      "label": 14,
+      "class": "Grape___healthy"
+    },
+    {
+      "file": "15_2969.jpg",
+      "label": 15,
+      "class": "Orange___Haunglongbing_(Citrus_greening)"
+    },
+    {
+      "file": "15_3983.jpg",
+      "label": 15,
+      "class": "Orange___Haunglongbing_(Citrus_greening)"
+    },
+    {
+      "file": "15_3521.jpg",
+      "label": 15,
+      "class": "Orange___Haunglongbing_(Citrus_greening)"
+    },
+    {
+      "file": "15_3888.jpg",
+      "label": 15,
+      "class": "Orange___Haunglongbing_(Citrus_greening)"
+    },
+    {
+      "file": "15_3114.jpg",
+      "label": 15,
+      "class": "Orange___Haunglongbing_(Citrus_greening)"
+    },
+    {
+      "file": "15_3330.jpg",
+      "label": 15,
+      "class": "Orange___Haunglongbing_(Citrus_greening)"
+    },
+    {
+      "file": "16_4464.jpg",
+      "label": 16,
+      "class": "Peach___Bacterial_spot"
+    },
+    {
+      "file": "16_4126.jpg",
+      "label": 16,
+      "class": "Peach___Bacterial_spot"
+    },
+    {
+      "file": "16_4204.jpg",
+      "label": 16,
+      "class": "Peach___Bacterial_spot"
+    },
+    {
+      "file": "16_4114.jpg",
+      "label": 16,
+      "class": "Peach___Bacterial_spot"
+    },
+    {
+      "file": "16_4344.jpg",
+      "label": 16,
+      "class": "Peach___Bacterial_spot"
+    },
+    {
+      "file": "16_4034.jpg",
+      "label": 16,
+      "class": "Peach___Bacterial_spot"
+    },
+    {
+      "file": "17_4530.jpg",
+      "label": 17,
+      "class": "Peach___healthy"
+    },
+    {
+      "file": "17_4480.jpg",
+      "label": 17,
+      "class": "Peach___healthy"
+    },
+    {
+      "file": "17_4499.jpg",
+      "label": 17,
+      "class": "Peach___healthy"
+    },
+    {
+      "file": "17_4509.jpg",
+      "label": 17,
+      "class": "Peach___healthy"
+    },
+    {
+      "file": "17_4508.jpg",
+      "label": 17,
+      "class": "Peach___healthy"
+    },
+    {
+      "file": "17_4513.jpg",
+      "label": 17,
+      "class": "Peach___healthy"
+    },
+    {
+      "file": "18_4680.jpg",
+      "label": 18,
+      "class": "Pepper,_bell___Bacterial_spot"
+    },
+    {
+      "file": "18_4740.jpg",
+      "label": 18,
+      "class": "Pepper,_bell___Bacterial_spot"
+    },
+    {
+      "file": "18_4573.jpg",
+      "label": 18,
+      "class": "Pepper,_bell___Bacterial_spot"
+    },
+    {
+      "file": "18_4725.jpg",
+      "label": 18,
+      "class": "Pepper,_bell___Bacterial_spot"
+    },
+    {
+      "file": "18_4630.jpg",
+      "label": 18,
+      "class": "Pepper,_bell___Bacterial_spot"
+    },
+    {
+      "file": "18_4570.jpg",
+      "label": 18,
+      "class": "Pepper,_bell___Bacterial_spot"
+    },
+    {
+      "file": "19_5002.jpg",
+      "label": 19,
+      "class": "Pepper,_bell___healthy"
+    },
+    {
+      "file": "19_4766.jpg",
+      "label": 19,
+      "class": "Pepper,_bell___healthy"
+    },
+    {
+      "file": "19_4849.jpg",
+      "label": 19,
+      "class": "Pepper,_bell___healthy"
+    },
+    {
+      "file": "19_4948.jpg",
+      "label": 19,
+      "class": "Pepper,_bell___healthy"
+    },
+    {
+      "file": "19_4831.jpg",
+      "label": 19,
+      "class": "Pepper,_bell___healthy"
+    },
+    {
+      "file": "19_4923.jpg",
+      "label": 19,
+      "class": "Pepper,_bell___healthy"
+    },
+    {
+      "file": "20_5075.jpg",
+      "label": 20,
+      "class": "Potato___Early_blight"
+    },
+    {
+      "file": "20_5225.jpg",
+      "label": 20,
+      "class": "Potato___Early_blight"
+    },
+    {
+      "file": "20_5148.jpg",
+      "label": 20,
+      "class": "Potato___Early_blight"
+    },
+    {
+      "file": "20_5194.jpg",
+      "label": 20,
+      "class": "Potato___Early_blight"
+    },
+    {
+      "file": "20_5243.jpg",
+      "label": 20,
+      "class": "Potato___Early_blight"
+    },
+    {
+      "file": "20_5200.jpg",
+      "label": 20,
+      "class": "Potato___Early_blight"
+    },
+    {
+      "file": "21_5390.jpg",
+      "label": 21,
+      "class": "Potato___Late_blight"
+    },
+    {
+      "file": "21_5391.jpg",
+      "label": 21,
+      "class": "Potato___Late_blight"
+    },
+    {
+      "file": "21_5414.jpg",
+      "label": 21,
+      "class": "Potato___Late_blight"
+    },
+    {
+      "file": "21_5372.jpg",
+      "label": 21,
+      "class": "Potato___Late_blight"
+    },
+    {
+      "file": "21_5272.jpg",
+      "label": 21,
+      "class": "Potato___Late_blight"
+    },
+    {
+      "file": "21_5404.jpg",
+      "label": 21,
+      "class": "Potato___Late_blight"
+    },
+    {
+      "file": "22_5461.jpg",
+      "label": 22,
+      "class": "Potato___healthy"
+    },
+    {
+      "file": "22_5458.jpg",
+      "label": 22,
+      "class": "Potato___healthy"
+    },
+    {
+      "file": "22_5472.jpg",
+      "label": 22,
+      "class": "Potato___healthy"
+    },
+    {
+      "file": "22_5460.jpg",
+      "label": 22,
+      "class": "Potato___healthy"
+    },
+    {
+      "file": "22_5467.jpg",
+      "label": 22,
+      "class": "Potato___healthy"
+    },
+    {
+      "file": "22_5466.jpg",
+      "label": 22,
+      "class": "Potato___healthy"
+    },
+    {
+      "file": "23_5488.jpg",
+      "label": 23,
+      "class": "Raspberry___healthy"
+    },
+    {
+      "file": "23_5547.jpg",
+      "label": 23,
+      "class": "Raspberry___healthy"
+    },
+    {
+      "file": "23_5504.jpg",
+      "label": 23,
+      "class": "Raspberry___healthy"
+    },
+    {
+      "file": "23_5482.jpg",
+      "label": 23,
+      "class": "Raspberry___healthy"
+    },
+    {
+      "file": "23_5538.jpg",
+      "label": 23,
+      "class": "Raspberry___healthy"
+    },
+    {
+      "file": "23_5500.jpg",
+      "label": 23,
+      "class": "Raspberry___healthy"
+    },
+    {
+      "file": "24_6518.jpg",
+      "label": 24,
+      "class": "Soybean___healthy"
+    },
+    {
+      "file": "24_5824.jpg",
+      "label": 24,
+      "class": "Soybean___healthy"
+    },
+    {
+      "file": "24_5639.jpg",
+      "label": 24,
+      "class": "Soybean___healthy"
+    },
+    {
+      "file": "24_6548.jpg",
+      "label": 24,
+      "class": "Soybean___healthy"
+    },
+    {
+      "file": "24_5688.jpg",
+      "label": 24,
+      "class": "Soybean___healthy"
+    },
+    {
+      "file": "24_5893.jpg",
+      "label": 24,
+      "class": "Soybean___healthy"
+    },
+    {
+      "file": "25_6912.jpg",
+      "label": 25,
+      "class": "Squash___Powdery_mildew"
+    },
+    {
+      "file": "25_6753.jpg",
+      "label": 25,
+      "class": "Squash___Powdery_mildew"
+    },
+    {
+      "file": "25_6895.jpg",
+      "label": 25,
+      "class": "Squash___Powdery_mildew"
+    },
+    {
+      "file": "25_6848.jpg",
+      "label": 25,
+      "class": "Squash___Powdery_mildew"
+    },
+    {
+      "file": "25_6756.jpg",
+      "label": 25,
+      "class": "Squash___Powdery_mildew"
+    },
+    {
+      "file": "25_6932.jpg",
+      "label": 25,
+      "class": "Squash___Powdery_mildew"
+    },
+    {
+      "file": "26_7015.jpg",
+      "label": 26,
+      "class": "Strawberry___Leaf_scorch"
+    },
+    {
+      "file": "26_7024.jpg",
+      "label": 26,
+      "class": "Strawberry___Leaf_scorch"
+    },
+    {
+      "file": "26_7125.jpg",
+      "label": 26,
+      "class": "Strawberry___Leaf_scorch"
+    },
+    {
+      "file": "26_7091.jpg",
+      "label": 26,
+      "class": "Strawberry___Leaf_scorch"
+    },
+    {
+      "file": "26_7138.jpg",
+      "label": 26,
+      "class": "Strawberry___Leaf_scorch"
+    },
+    {
+      "file": "26_7139.jpg",
+      "label": 26,
+      "class": "Strawberry___Leaf_scorch"
+    },
+    {
+      "file": "27_7227.jpg",
+      "label": 27,
+      "class": "Strawberry___healthy"
+    },
+    {
+      "file": "27_7203.jpg",
+      "label": 27,
+      "class": "Strawberry___healthy"
+    },
+    {
+      "file": "27_7200.jpg",
+      "label": 27,
+      "class": "Strawberry___healthy"
+    },
+    {
+      "file": "27_7239.jpg",
+      "label": 27,
+      "class": "Strawberry___healthy"
+    },
+    {
+      "file": "27_7222.jpg",
+      "label": 27,
+      "class": "Strawberry___healthy"
+    },
+    {
+      "file": "27_7178.jpg",
+      "label": 27,
+      "class": "Strawberry___healthy"
+    },
+    {
+      "file": "28_7373.jpg",
+      "label": 28,
+      "class": "Tomato___Bacterial_spot"
+    },
+    {
+      "file": "28_7388.jpg",
+      "label": 28,
+      "class": "Tomato___Bacterial_spot"
+    },
+    {
+      "file": "28_7303.jpg",
+      "label": 28,
+      "class": "Tomato___Bacterial_spot"
+    },
+    {
+      "file": "28_7635.jpg",
+      "label": 28,
+      "class": "Tomato___Bacterial_spot"
+    },
+    {
+      "file": "28_7512.jpg",
+      "label": 28,
+      "class": "Tomato___Bacterial_spot"
+    },
+    {
+      "file": "28_7657.jpg",
+      "label": 28,
+      "class": "Tomato___Bacterial_spot"
+    },
+    {
+      "file": "29_7731.jpg",
+      "label": 29,
+      "class": "Tomato___Early_blight"
+    },
+    {
+      "file": "29_7764.jpg",
+      "label": 29,
+      "class": "Tomato___Early_blight"
+    },
+    {
+      "file": "29_7854.jpg",
+      "label": 29,
+      "class": "Tomato___Early_blight"
+    },
+    {
+      "file": "29_7681.jpg",
+      "label": 29,
+      "class": "Tomato___Early_blight"
+    },
+    {
+      "file": "29_7713.jpg",
+      "label": 29,
+      "class": "Tomato___Early_blight"
+    },
+    {
+      "file": "29_7834.jpg",
+      "label": 29,
+      "class": "Tomato___Early_blight"
+    },
+    {
+      "file": "30_8097.jpg",
+      "label": 30,
+      "class": "Tomato___Late_blight"
+    },
+    {
+      "file": "30_8045.jpg",
+      "label": 30,
+      "class": "Tomato___Late_blight"
+    },
+    {
+      "file": "30_8123.jpg",
+      "label": 30,
+      "class": "Tomato___Late_blight"
+    },
+    {
+      "file": "30_8214.jpg",
+      "label": 30,
+      "class": "Tomato___Late_blight"
+    },
+    {
+      "file": "30_8053.jpg",
+      "label": 30,
+      "class": "Tomato___Late_blight"
+    },
+    {
+      "file": "30_7937.jpg",
+      "label": 30,
+      "class": "Tomato___Late_blight"
+    },
+    {
+      "file": "31_8271.jpg",
+      "label": 31,
+      "class": "Tomato___Leaf_Mold"
+    },
+    {
+      "file": "31_8374.jpg",
+      "label": 31,
+      "class": "Tomato___Leaf_Mold"
+    },
+    {
+      "file": "31_8371.jpg",
+      "label": 31,
+      "class": "Tomato___Leaf_Mold"
+    },
+    {
+      "file": "31_8340.jpg",
+      "label": 31,
+      "class": "Tomato___Leaf_Mold"
+    },
+    {
+      "file": "31_8331.jpg",
+      "label": 31,
+      "class": "Tomato___Leaf_Mold"
+    },
+    {
+      "file": "31_8297.jpg",
+      "label": 31,
+      "class": "Tomato___Leaf_Mold"
+    },
+    {
+      "file": "32_8760.jpg",
+      "label": 32,
+      "class": "Tomato___Septoria_leaf_spot"
+    },
+    {
+      "file": "32_8711.jpg",
+      "label": 32,
+      "class": "Tomato___Septoria_leaf_spot"
+    },
+    {
+      "file": "32_8689.jpg",
+      "label": 32,
+      "class": "Tomato___Septoria_leaf_spot"
+    },
+    {
+      "file": "32_8730.jpg",
+      "label": 32,
+      "class": "Tomato___Septoria_leaf_spot"
+    },
+    {
+      "file": "32_8445.jpg",
+      "label": 32,
+      "class": "Tomato___Septoria_leaf_spot"
+    },
+    {
+      "file": "32_8702.jpg",
+      "label": 32,
+      "class": "Tomato___Septoria_leaf_spot"
+    },
+    {
+      "file": "33_8972.jpg",
+      "label": 33,
+      "class": "Tomato___Spider_mites Two-spotted_spider_mite"
+    },
+    {
+      "file": "33_9089.jpg",
+      "label": 33,
+      "class": "Tomato___Spider_mites Two-spotted_spider_mite"
+    },
+    {
+      "file": "33_9094.jpg",
+      "label": 33,
+      "class": "Tomato___Spider_mites Two-spotted_spider_mite"
+    },
+    {
+      "file": "33_9062.jpg",
+      "label": 33,
+      "class": "Tomato___Spider_mites Two-spotted_spider_mite"
+    },
+    {
+      "file": "33_9043.jpg",
+      "label": 33,
+      "class": "Tomato___Spider_mites Two-spotted_spider_mite"
+    },
+    {
+      "file": "33_9071.jpg",
+      "label": 33,
+      "class": "Tomato___Spider_mites Two-spotted_spider_mite"
+    },
+    {
+      "file": "34_9204.jpg",
+      "label": 34,
+      "class": "Tomato___Target_Spot"
+    },
+    {
+      "file": "34_9330.jpg",
+      "label": 34,
+      "class": "Tomato___Target_Spot"
+    },
+    {
+      "file": "34_9138.jpg",
+      "label": 34,
+      "class": "Tomato___Target_Spot"
+    },
+    {
+      "file": "34_9203.jpg",
+      "label": 34,
+      "class": "Tomato___Target_Spot"
+    },
+    {
+      "file": "34_9252.jpg",
+      "label": 34,
+      "class": "Tomato___Target_Spot"
+    },
+    {
+      "file": "34_9202.jpg",
+      "label": 34,
+      "class": "Tomato___Target_Spot"
+    },
+    {
+      "file": "35_10044.jpg",
+      "label": 35,
+      "class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
+    },
+    {
+      "file": "35_9530.jpg",
+      "label": 35,
+      "class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
+    },
+    {
+      "file": "35_9740.jpg",
+      "label": 35,
+      "class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
+    },
+    {
+      "file": "35_9536.jpg",
+      "label": 35,
+      "class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
+    },
+    {
+      "file": "35_9455.jpg",
+      "label": 35,
+      "class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
+    },
+    {
+      "file": "35_9591.jpg",
+      "label": 35,
+      "class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
+    },
+    {
+      "file": "36_10545.jpg",
+      "label": 36,
+      "class": "Tomato___Tomato_mosaic_virus"
+    },
+    {
+      "file": "36_10532.jpg",
+      "label": 36,
+      "class": "Tomato___Tomato_mosaic_virus"
+    },
+    {
+      "file": "36_10551.jpg",
+      "label": 36,
+      "class": "Tomato___Tomato_mosaic_virus"
+    },
+    {
+      "file": "36_10524.jpg",
+      "label": 36,
+      "class": "Tomato___Tomato_mosaic_virus"
+    },
+    {
+      "file": "36_10557.jpg",
+      "label": 36,
+      "class": "Tomato___Tomato_mosaic_virus"
+    },
+    {
+      "file": "36_10546.jpg",
+      "label": 36,
+      "class": "Tomato___Tomato_mosaic_virus"
+    },
+    {
+      "file": "37_10619.jpg",
+      "label": 37,
+      "class": "Tomato___healthy"
+    },
+    {
+      "file": "37_10799.jpg",
+      "label": 37,
+      "class": "Tomato___healthy"
+    },
+    {
+      "file": "37_10635.jpg",
+      "label": 37,
+      "class": "Tomato___healthy"
+    },
+    {
+      "file": "37_10679.jpg",
+      "label": 37,
+      "class": "Tomato___healthy"
+    },
+    {
+      "file": "37_10740.jpg",
+      "label": 37,
+      "class": "Tomato___healthy"
+    },
+    {
+      "file": "37_10572.jpg",
+      "label": 37,
+      "class": "Tomato___healthy"
+    }
+  ]
+}

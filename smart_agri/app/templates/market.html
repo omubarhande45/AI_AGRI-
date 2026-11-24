@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Market Intelligence & Mandi{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="kicker">e-NAM INTERLINK · 7 MANDIS · 90-D RECURSIVE FORECAST</div>
+    <h1>Market Intelligence &amp; Mandi Recommendation</h1>
+    <div class="sub">Price analysis, demand prediction and best-mandi selection for {{ crop }} · gradient-boosting price model R² 0.9998</div>
+  </div>
+  <div class="pill-tabs">
+    {% for c in crop_names %}
+    <a href="{{ url_for('main.market', crop=c) }}" class="{{ 'on' if c==crop }}">{{ c }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="grid g-75">
+  <div class="stack">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 6-6"/></svg></span>
+        <div class="t">MODAL PRICE TRAJECTORY — {{ crop|upper }} (180 D + 30 D FORECAST)</div>
+        <div class="grow"></div>
+        <span class="chip green">now {{ inr(history[-1].modal_price if history else 0) }}/q</span>
+      </div>
+      <canvas id="marketChart" class="chart" height="190"
+        data-labels='{{ (history[::4]|map(attribute="date")|list)|tojson }}'
+        data-values='{{ (history[::4]|map(attribute="modal_price")|list)|tojson }}'></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <div class="t">MANDI NET-REALISATION MATRIX</div></div>
+      <table class="tbl">
+        <tr><th>Mandi</th><th>Km</th><th>Commission</th><th>Forecast ₹/q</th><th>Transit loss</th><th style="text-align:right">Net ₹/q</th><th>vs best</th></tr>
+        {% for m in mandis %}
+        <tr class="{{ 'hl' if loop.index==1 }}">
+          <td><b>{{ m.mandi }}</b><div class="tiny dim">{{ m.district }}</div></td>
+          <td class="num">{{ m.distance_km }}</td>
+          <td class="num">{{ m.commission_pct }}%</td>
+          <td class="num">{{ inr(m.forecast_30d_inr_q) }}</td>
+          <td class="num">{{ m.transit_loss_pct }}%</td>
+          <td class="num">{{ inr(m.net_after_transit_loss_inr_q) }}</td>
+          <td><span class="chip {{ 'green' if m.vs_best_pct==0 else 'amber' }}">{{ m.vs_best_pct }}%</span></td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></span>
+        <div class="t">CROP ALTERNATIVES — WHAT WOULD EARN MOST ON THIS SOIL RIGHT NOW</div></div>
+      <table class="tbl">
+        <tr><th>Crop</th><th>Best mandi</th><th>Net ₹/q</th><th>Yield q</th><th style="text-align:right">Net profit</th><th>Margin</th></tr>
+        {% for a in alternatives %}
+        <tr class="{{ 'hl' if a.crop==crop }}">
+          <td><b>{{ a.crop }}</b></td><td>{{ a.best_mandi }}</td><td class="num">{{ inr(a.net_price_inr_q) }}</td>
+          <td class="num">{{ a.expected_yield_q }}</td><td class="num up">{{ inr(a.net_profit_inr) }}</td>
+          <td class="num">{{ a.margin_pct }}%</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-head"><span class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <div class="t">DEMAND OUTLOOK — NEXT 90 D</div></div>
+      {% if demand.error is not defined %}
+      <div class="readout">
+        <div class="cell"><div class="v">{{ demand.demand_index }}</div><div class="x">demand index (1.0 = seasonal norm)</div></div>
+        <div class="cell"><div class="v">{{ demand.arrivals_last30_t_per_day }} t</div><div class="x">avg daily arrivals, 30 d</div></div>
+      </div>
+      <p class="tiny" style="margin-top:10px">{{ demand.interpretation }}.</p>
+      <p class="tiny dim" style="margin-top:6px"><b>Action:</b> {{ demand.recommended_action }}</p>
+      <div style="margin-top:8px"><span class="badge {{ 'red' if demand.glut_risk=='high' else ('amber' if demand.glut_risk=='moderate' else 'green') }}">glut risk: {{ demand.glut_risk }}</span></div>
+      {% else %}<p class="dim tiny">Insufficient market history.</p>{% endif %}
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+        <div class="t">PROFIT ESTIMATION — {{ best.mandi if best else '—' }}</div></div>
+      {% if profit and profit.error is not defined %}
+      <div class="kv"><span class="k">Yield assumption</span><span class="v">{{ profit.yield_q }} q</span></div>
+      <div class="kv"><span class="k">Net price</span><span class="v">{{ inr(profit.net_price_inr_q) }}/q</span></div>
+      <div class="kv"><span class="k">Gross revenue</span><span class="v up">{{ inr(profit.gross_revenue_inr) }}</span></div>
+      <div class="kv"><span class="k">Cultivation cost</span><span class="v dn">−{{ inr(profit.total_cost_inr) }}</span></div>
+      <div class="netbox"><div><div class="lbl">NET PROFIT</div><div class="v">{{ inr(profit.net_profit_inr) }}</div></div>
+        <div class="tiny" style="color:#b7d2b0;text-align:right">ROI {{ profit.roi_pct }}%<br>margin {{ profit.margin_pct }}%</div></div>
+      <p class="tiny dim" style="margin-top:10px">{{ profit.verdict }}</p>
+      <hr class="divider">
+      <div class="lbl" style="margin-bottom:6px">SENSITIVITY</div>
+      {% for s in profit.scenarios %}
+      <div class="kv"><span class="k">{{ s.scenario }} ({{ s.yield_q }} q @ {{ inr(s.price_inr_q) }})</span><span class="v {{ 'up' if s.net_inr>0 else 'dn' }}">{{ inr(s.net_inr) }}</span></div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

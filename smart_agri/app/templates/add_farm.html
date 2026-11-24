@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Add Farm{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="kicker">ONBOARDING</div><h1>Register a farm</h1></div></div>
+<div class="card" style="max-width:640px">
+  <form method="post">
+    <div class="form-row">
+      <div class="field"><label>Farm name</label><input name="name" required></div>
+      <div class="field"><label>Total area (acres)</label><input name="total_area" type="number" step="0.1" value="2.5" required></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Village</label><input name="village" placeholder="Villaville"></div>
+      <div class="field"><label>District</label><input name="district" value="Nashik"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Soil type</label>
+        <select name="soil_type"><option>Medium black (loam)</option><option>Heavy black (regur)</option><option>Sandy loam</option><option>Laterite</option><option>Alluvial</option></select></div>
+      <div class="field"><label>Irrigation</label>
+        <select name="irrigation"><option>drip</option><option>sprinkler</option><option>flood</option><option>rainfed</option></select></div>
+    </div>
+    <button class="btn">Create farm →</button>
+  </form>
+</div>
+{% endblock %}

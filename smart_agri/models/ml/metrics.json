@@ -1,0 +1,141 @@
+{
+  "yield": {
+    "n_train": 3200,
+    "n_test": 800,
+    "target": "yield ratio (achieved / crop typical), converted back to kg/acre",
+    "r2_ratio": 0.8453,
+    "r2_kg_per_acre": 0.9741,
+    "mae_kg_per_acre": 66.64,
+    "mae_pct_of_typical": 11.86,
+    "median_ape_pct": 8.08,
+    "pooled_mape_pct": 10.9,
+    "mean_ape_by_crop_pct": 10.91,
+    "per_crop": {
+      "Banana": {
+        "n_held_out": 55,
+        "mape_pct": 16.3,
+        "median_ape_pct": 12.13,
+        "mae_kg_per_acre": 111.13,
+        "mean_yield_kg_per_acre": 812.9,
+        "mae_pct_of_typical": 13.67
+      },
+      "Bell pepper": {
+        "n_held_out": 41,
+        "mape_pct": 11.01,
+        "median_ape_pct": 8.74,
+        "mae_kg_per_acre": 7.69,
+        "mean_yield_kg_per_acre": 81.2,
+        "mae_pct_of_typical": 9.46
+      },
+      "Cotton": {
+        "n_held_out": 57,
+        "mape_pct": 9.51,
+        "median_ape_pct": 7.8,
+        "mae_kg_per_acre": 0.44,
+        "mean_yield_kg_per_acre": 5.0,
+        "mae_pct_of_typical": 8.75
+      },
+      "Grape": {
+        "n_held_out": 58,
+        "mape_pct": 14.05,
+        "median_ape_pct": 7.72,
+        "mae_kg_per_acre": 730.61,
+        "mean_yield_kg_per_acre": 6163.9,
+        "mae_pct_of_typical": 11.85
+      },
+      "Maize": {
+        "n_held_out": 54,
+        "mape_pct": 8.54,
+        "median_ape_pct": 6.64,
+        "mae_kg_per_acre": 1.34,
+        "mean_yield_kg_per_acre": 15.8,
+        "mae_pct_of_typical": 8.49
+      },
+      "Onion": {
+        "n_held_out": 59,
+        "mape_pct": 10.6,
+        "median_ape_pct": 6.94,
+        "mae_kg_per_acre": 6.89,
+        "mean_yield_kg_per_acre": 73.1,
+        "mae_pct_of_typical": 9.42
+      },
+      "Pigeon pea (Tur)": {
+        "n_held_out": 63,
+        "mape_pct": 10.45,
+        "median_ape_pct": 7.81,
+        "mae_kg_per_acre": 0.3,
+        "mean_yield_kg_per_acre": 2.8,
+        "mae_pct_of_typical": 10.59
+      },
+      "Pomegranate": {
+        "n_held_out": 56,
+        "mape_pct": 12.21,
+        "median_ape_pct": 7.71,
+        "mae_kg_per_acre": 4.75,
+        "mean_yield_kg_per_acre": 44.1,
+        "mae_pct_of_typical": 10.77
+      },
+      "Potato": {
+        "n_held_out": 64,
+        "mape_pct": 10.33,
+        "median_ape_pct": 7.73,
+        "mae_kg_per_acre": 6.83,
+        "mean_yield_kg_per_acre": 69.3,
+        "mae_pct_of_typical": 9.86
+      },
+      "Soybean": {
+        "n_held_out": 67,
+        "mape_pct": 10.95,
+        "median_ape_pct": 8.69,
+        "mae_kg_per_acre": 0.45,
+        "mean_yield_kg_per_acre": 4.4,
+        "mae_pct_of_typical": 10.35
+      },
+      "Squash": {
+        "n_held_out": 58,
+        "mape_pct": 8.38,
+        "median_ape_pct": 7.29,
+        "mae_kg_per_acre": 5.36,
+        "mean_yield_kg_per_acre": 65.2,
+        "mae_pct_of_typical": 8.21
+      },
+      "Sugarcane": {
+        "n_held_out": 58,
+        "mape_pct": 12.3,
+        "median_ape_pct": 11.46,
+        "mae_kg_per_acre": 41.0,
+        "mean_yield_kg_per_acre": 350.3,
+        "mae_pct_of_typical": 11.7
+      },
+      "Tomato": {
+        "n_held_out": 57,
+        "mape_pct": 8.29,
+        "median_ape_pct": 7.19,
+        "mae_kg_per_acre": 9.1,
+        "mean_yield_kg_per_acre": 113.4,
+        "mae_pct_of_typical": 8.03
+      },
+      "Wheat": {
+        "n_held_out": 53,
+        "mape_pct": 9.83,
+        "median_ape_pct": 8.21,
+        "mae_kg_per_acre": 0.84,
+        "mean_yield_kg_per_acre": 8.5,
+        "mae_pct_of_typical": 9.98
+      }
+    }
+  },
+  "price": {
+    "n_train": 29008,
+    "n_test": 7350,
+    "r2": 0.9998,
+    "mae_inr_per_q": 23.9,
+    "mape_pct": 1.13,
+    "horizon_days": 90
+  },
+  "demand": {
+    "n": 36351,
+    "r2": 0.9975,
+    "mape_pct": 1.8
+  }
+}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Add Field{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="kicker">ONBOARDING · {{ farm.name if farm else '' }}</div><h1>Add a field</h1></div></div>
+<div class="card" style="max-width:700px">
+  <form method="post">
+    <div class="form-row">
+      <div class="field"><label>Field name</label><input name="name" placeholder="Plot 1" required></div>
+      <div class="field"><label>Area (acres)</label><input name="area_acres" type="number" step="0.1" value="1.0" required></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Crop</label>
+        <select name="crop">{% for c in crops %}<option>{{ c }}</option>{% endfor %}</select></div>
+      <div class="field"><label>Variety</label><input name="variety" placeholder="Hybrid Roma"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Sowing date</label><input name="sowing_date" type="date" value="2026-07-30"></div>
+      <div class="field"><label>Expected harvest</label><input name="expected_harvest" type="date" value="2026-10-15"></div>
+    </div>
+    <div class="field"><label>Season</label>
+      <select name="season"><option>kharif</option><option>rabi</option><option>summer</option></select></div>
+    <button class="btn">Add field →</button>
+  </form>
+</div>
+{% endblock %}
