@@ -4,5 +4,8 @@ frontend/dist/
 smart_agri/__pycache__/
 smart_agri/.pytest_cache/
 smart_agri/data/smart_agri.db
-smart_agri/data/uploads/scans/
+smart_agri/data/uploads/
+smart_agri/training/
+smart_agri/docs/
 smart_agri/models/disease_cnn/plant_disease_cnn.pt
+smart_agri/models/disease_cnn/plant_disease_cnn.onnx.data
